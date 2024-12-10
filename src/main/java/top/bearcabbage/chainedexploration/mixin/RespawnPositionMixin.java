@@ -28,6 +28,7 @@ public abstract class RespawnPositionMixin  {
         //this.rtpSpawn = getWorldSpawnPos(getServerWorld(), getServerWorld().getSpawnPos());
     }
 
+
     @Unique
     public BlockPos setRtpSpawn(BlockPos pos) {
         this.rtpSpawn = pos;

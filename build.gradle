@@ -17,6 +17,8 @@ repositories {
 	maven {
 		url 'https://repository.hanbings.io/proxy'
 	}
+	// BCLib
+	maven { url 'https://maven.ambertation.de/releases' }
 }
 fabricApi {
 	configureDataGeneration {
@@ -32,7 +34,9 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+
+	//BCLib
+	modImplementation "org.betterx:bclib:${project.bclib_version}"
 }
 
 processResources {
