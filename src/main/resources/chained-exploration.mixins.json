@@ -1,11 +1,12 @@
 {
-	"required": true,
-	"package": "top.bearcabbage.chainedexploration.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"ExampleMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
+  "required": true,
+  "package": "top.bearcabbage.chainedexploration.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "RTPSpawnMixin",
+    "RespawnPositionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
 	}
 }

@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "chained-exploration",
-	"version": "${version}",
+	"version": "1.21.1",
 	"name": "Chained Exploration",
 	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
