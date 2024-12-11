@@ -3,11 +3,11 @@ package top.bearcabbage.chainedexploration.teamhor;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Team {
+public class CETeam {
     private String leader;
     private Set<String> members;
 
-    public Team(String leader) {
+    public CETeam(String leader) {
         this.leader = leader;
         this.members = new HashSet<>();
         members.add(leader);
