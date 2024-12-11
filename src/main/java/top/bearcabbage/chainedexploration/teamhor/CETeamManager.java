@@ -47,5 +47,43 @@ public class CETeamManager {
         return true;
     }
 
+    public static boolean quitTeam(String playerName) {
+        for (Map.Entry<String, CETeam> entry : teamList.entrySet()) {
+            CETeam team = entry.getValue();
+            if (team.getMembers().contains(playerName)) {
+                // 玩家存在于某个队伍中
+                if (team.getLeader().equals(playerName)) {
+                    // 如果玩家是队长，则不能直接退出，需要先解散队伍
+                    return false; // 或者可以抛出异常，提示队长不能直接退出
+                } else {
+                    // 玩家是普通成员，可以直接移除
+                    return team.removeMember(playerName);
+                }
+            }
+        }
+        // 玩家不在任何队伍中
+        return false;
+    }
+
+    public static String listAllTeams() {
+        StringBuilder allTeamsInfo = new StringBuilder("当前所有队伍列表:\n");
+        for (Map.Entry<String, CETeam> entry : teamList.entrySet()) {
+            CETeam team = entry.getValue();
+            allTeamsInfo.append("队伍名称: ").append(team.getLeader()).append("\n")
+                    .append("队长: ").append(team.getLeader()).append("\n")
+                    .append("成员: ");
+            for (String member : team.getMembers()) {
+                if (!team.getLeader().equals(member)) {
+                    allTeamsInfo.append(member).append(", ");
+                }
+            }
+            if (team.getMembers().size() > 1) {
+                // 移除最后一个逗号和空格
+                allTeamsInfo.setLength(allTeamsInfo.length() - 2);
+            }
+            allTeamsInfo.append("\n\n");
+        }
+        return allTeamsInfo.toString().trim(); // 去除最后的换行符
+    }
     // 其他可能需要的方法，如列出所有队伍等...
 }
