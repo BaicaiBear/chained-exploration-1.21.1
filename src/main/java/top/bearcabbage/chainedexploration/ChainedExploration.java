@@ -2,11 +2,9 @@ package top.bearcabbage.chainedexploration;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.bearcabbage.chainedexploration.command.ClanCommands;
-import top.bearcabbage.chainedexploration.utils.CEConfig;
+import top.bearcabbage.chainedexploration.command.CECommands;
 
 public class ChainedExploration implements ModInitializer {
 	public static final String MOD_ID = "chained-exploration";
@@ -21,7 +19,7 @@ public class ChainedExploration implements ModInitializer {
 
 		// 使用CommandRegistrationCallback.EVENT注册命令
 
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment)->ClanCommands.registerCommands(dispatcher)); // 调用静态方法注册命令
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment)-> CECommands.registerCommands(dispatcher)); // 调用静态方法注册命令
 
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
