@@ -3,8 +3,8 @@
   "package": "top.bearcabbage.chainedexploration.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "RTPSpawnMixin",
-    "RespawnPositionMixin"
+    "SpawnPointCommandMixin",
+    "ServerPlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
