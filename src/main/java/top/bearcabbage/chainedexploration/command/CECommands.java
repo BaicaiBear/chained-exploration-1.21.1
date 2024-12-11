@@ -3,7 +3,9 @@ package top.bearcabbage.chainedexploration.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.Message;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -101,34 +103,30 @@ public class CECommands {
                             return 0;
                         })
                 )
-        );
-                /*
+
                 // 设置玩家等级的子命令
                 .then(literal("setlevel")
                         .requires(source -> source.hasPermissionLevel(0))
-                        .then(argument("targetPlayer", StringArgumentType.word())
+                        .then(argument("targetPlayer", EntityArgumentType.player())
                                 .then(argument("level", IntegerArgumentType.integer(0))
                                         .executes(context -> {
                                             ServerCommandSource source = context.getSource();
-                                            if (source.getEntity() instanceof ServerPlayerEntity executor) {
-                                                String targetPlayerName = StringArgumentType.getString(context, "targetPlayer");
-                                                int newLevel = IntegerArgumentType.getInteger(context, "level");
 
-                                                // 假设存在一个方法来设置玩家等级
-                                                if (PlayerLevelManager.setPlayerLevel(targetPlayerName, newLevel)) {
-                                                    source.sendFeedback(() -> Text.literal("成功设置 " + targetPlayerName + " 的等级为: " + newLevel), false);
-                                                    return sendSuccessFeedback(source, "等级设置成功");
-                                                } else {
-                                                    source.sendError(() -> Text.literal("无法设置等级: 玩家不存在或发生其他错误"));
-                                                    return sendErrorFeedback(source, "等级设置失败");
-                                                }
+                                            ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
+                                            int newLevel = IntegerArgumentType.getInteger(context, "level");
+
+                                            // 假设存在一个方法来设置玩家等级
+                                            if (CEPlayer.setCELevel(targetPlayer, newLevel)) {
+                                                source.sendFeedback(() -> Text.literal("成功设置 " + targetPlayer.getName().getLiteralString() + " 的等级为: " + newLevel), false);
+                                                return sendSuccessFeedback(source, "等级设置成功");
+                                            } else {
+                                                sendErrorFeedback(source,"无法设置等级: 请确保等级在0-4之间且玩家在线");
+                                                return sendErrorFeedback(source, "等级设置失败");
                                             }
-                                            source.sendError(() -> Text.literal("只能由玩家执行此命令"));
-                                            return 0;
                                         })
                                 )
                         )
                 )
-        );*/
+        );
     }
 }

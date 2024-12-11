@@ -16,10 +16,12 @@ public class CEPlayer {
         return data != null ? data.getInt("ce_level") : 0;
     }
 
-    public void setCELevel(ServerPlayerEntity player,int level) {
+    public static boolean setCELevel(ServerPlayerEntity player, int level) {
+        if(level<0||level>4) return false;
         NbtCompound data = new NbtCompound();
         data.putInt("ce_level", level);
         PlayerDataApi.setCustomDataFor(player, ChainedExploration.CE_LEVEL, data);
+        return true;
     }
 
     public void levelUP(ServerPlayerEntity player) {
