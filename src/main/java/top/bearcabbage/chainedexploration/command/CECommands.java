@@ -4,37 +4,36 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import top.bearcabbage.chainedexploration.team.TeamManager;
+import net.minecraft.text.Text;
+import top.bearcabbage.chainedexploration.teamhor.TeamManager;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class CECommands {
     public void Initialize(){}
-
-    private static int sendSuccessFeedback(ServerCommandSource source, String key, Object... args) {
- //       source.sendFeedback(() -> Text.translatable(key, args), true);
+    private static int sendSuccessFeedback(ServerCommandSource source, String message) {
+//        source.sendFeedback(message);
         return 1;
     }
 
-    private static int sendErrorFeedback(ServerCommandSource source, String key, Object... args) {
-//        source.sendError(() -> Text.translatable(key, args));
+    private static int sendErrorFeedback(ServerCommandSource source, String errorMessage) {
+//        source.sendError(errorMessage);
         return 0;
     }
-
     public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         // 新增命令: 加入队伍
         dispatcher.register(literal("clan")
                 .then(argument("targetPlayer", StringArgumentType.word())
-                        .requires(source -> source.hasPermissionLevel(0)) // 玩家权限调整为0，即所有玩家都可以使用
+                        .requires(source -> source.hasPermissionLevel(0))
                         .executes(context -> {
                             ServerCommandSource source = context.getSource();
                             if (source.getEntity() instanceof ServerPlayerEntity player) {
                                 String targetPlayer = StringArgumentType.getString(context, "targetPlayer");
                                 if (TeamManager.createOrJoinTeam(player.getName().getString(), targetPlayer)) {
-                                    return sendSuccessFeedback(source, "command.clan.join.success", targetPlayer);
+                                    return sendSuccessFeedback(source, "成功加入队伍: " + targetPlayer);
                                 } else {
-                                    sendErrorFeedback(source, "command.clan.join.fail", targetPlayer);
+                                    sendErrorFeedback(source, "无法加入队伍: 目标玩家不存在或已达到队伍人数限制");
                                 }
                             }
                             return 0;
@@ -50,9 +49,9 @@ public class CECommands {
                             if (source.getEntity() instanceof ServerPlayerEntity player) {
                                 String targetPlayer = StringArgumentType.getString(context, "playerName");
                                 if (TeamManager.removeMemberFromTeam(targetPlayer, player.getName().getString())) {
-                                    return sendSuccessFeedback(source, "command.clan.remove.success", targetPlayer);
+                                    return sendSuccessFeedback(source, "成功移除队员: " + targetPlayer);
                                 } else {
-                                    sendErrorFeedback(source, "command.clan.remove.notInTeam", targetPlayer);
+                                    sendErrorFeedback(source, "无法移除队员: 玩家不在队伍中");
                                 }
                             }
                             return 0;
@@ -66,13 +65,58 @@ public class CECommands {
                     ServerCommandSource source = context.getSource();
                     if (source.getEntity() instanceof ServerPlayerEntity player) {
                         if (TeamManager.disbandTeam(player.getName().getString())) {
-                            return sendSuccessFeedback(source, "command.clan.disband.success");
+                            return sendSuccessFeedback(source, "成功解散队伍");
                         } else {
-                            sendErrorFeedback(source, "command.clan.disband.notLeader");
+                            sendErrorFeedback(source, "无法解散队伍: 您不是队伍的领导者");
                         }
                     }
                     return 0;
                 })
         );
+
+        //ce指令
+        /*
+        dispatcher.register(literal("ce")
+                // 查询玩家等级的子命令
+                .then(literal("getlevel")
+                        .requires(source -> source.hasPermissionLevel(0))
+                        .executes(context -> {
+                            ServerCommandSource source = context.getSource();
+                            if (source.getEntity() instanceof ServerPlayerEntity player) {
+                                int level = GetLevel.getLevel(player);
+                                source.sendFeedback(() -> "您的等级是: " + level, false);
+                                return level; // 返回等级信息
+                            }
+                            source.sendError(() -> "只能由玩家执行此命令");
+                            return 0;
+                        })
+                )
+                // 设置玩家等级的子命令
+                .then(literal("setlevel")
+                        .requires(source -> source.hasPermissionLevel(0))
+                        .then(argument("targetPlayer", StringArgumentType.word())
+                                .then(argument("level", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                            ServerCommandSource source = context.getSource();
+                                            if (source.getEntity() instanceof ServerPlayerEntity executor) {
+                                                String targetPlayerName = StringArgumentType.getString(context, "targetPlayer");
+                                                int newLevel = IntegerArgumentType.getInteger(context, "level");
+
+                                                // 假设存在一个方法来设置玩家等级
+                                                if (PlayerLevelManager.setPlayerLevel(targetPlayerName, newLevel)) {
+                                                    source.sendFeedback(() -> Text.literal("成功设置 " + targetPlayerName + " 的等级为: " + newLevel), false);
+                                                    return sendSuccessFeedback(source, "等级设置成功");
+                                                } else {
+                                                    source.sendError(() -> Text.literal("无法设置等级: 玩家不存在或发生其他错误"));
+                                                    return sendErrorFeedback(source, "等级设置失败");
+                                                }
+                                            }
+                                            source.sendError(() -> Text.literal("只能由玩家执行此命令"));
+                                            return 0;
+                                        })
+                                )
+                        )
+                )
+        );*/
     }
 }
