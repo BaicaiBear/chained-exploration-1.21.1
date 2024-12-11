@@ -16,18 +16,12 @@ public class ChainedExploration implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	public static final NbtDataStorage CE_LEVEL = new NbtDataStorage("ce_level");
-	public static final NbtDataStorage CE_ISTEAMED = new NbtDataStorage("ce_isteamed");
 	@Override
 	public void onInitialize() {
-
 		// 获取配置文件
 		PlayerDataApi.register(CE_LEVEL);
-		PlayerDataApi.register(CE_ISTEAMED);
 		// 使用CommandRegistrationCallback.EVENT注册命令
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment)->CECommands.registerCommands(dispatcher)); // 调用静态方法注册命令
 
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
 	}
 }

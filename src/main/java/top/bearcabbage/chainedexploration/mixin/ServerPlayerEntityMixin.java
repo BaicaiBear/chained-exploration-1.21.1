@@ -17,6 +17,6 @@ public class ServerPlayerEntityMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
-
+        CEPlayer.onTick((ServerPlayerEntity) (Object) this);
     }
 }

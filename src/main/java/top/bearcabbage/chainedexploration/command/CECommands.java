@@ -106,7 +106,7 @@ public class CECommands {
 
                 // 设置玩家等级的子命令
                 .then(literal("setlevel")
-                        .requires(source -> source.hasPermissionLevel(0))
+                        .requires(source -> source.hasPermissionLevel(2))
                         .then(argument("targetPlayer", EntityArgumentType.player())
                                 .then(argument("level", IntegerArgumentType.integer(0))
                                         .executes(context -> {

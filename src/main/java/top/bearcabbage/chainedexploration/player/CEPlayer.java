@@ -7,7 +7,7 @@ import top.bearcabbage.chainedexploration.ChainedExploration;
 
 public class CEPlayer {
 
-    private void onTick(ServerPlayerEntity player) {
+    public static void onTick(ServerPlayerEntity player) {
 
     }
 
@@ -32,7 +32,7 @@ public class CEPlayer {
     }
 
     public boolean isTeamed(ServerPlayerEntity player) {
-        NbtCompound data = PlayerDataApi.getCustomDataFor(player, ChainedExploration.CE_ISTEAMED);
+        NbtCompound data = PlayerDataApi.getCustomDataFor(player, ChainedExploration.CE_LEVEL);
         return data != null && data.getBoolean("ce_isteamed");
     }
 
@@ -42,7 +42,7 @@ public class CEPlayer {
         }
         NbtCompound data = new NbtCompound();
         data.putBoolean("ce_isteamed", true);
-        PlayerDataApi.setCustomDataFor(player, ChainedExploration.CE_ISTEAMED, data);
+        PlayerDataApi.setCustomDataFor(player, ChainedExploration.CE_LEVEL, data);
         return true;
     }
 }
