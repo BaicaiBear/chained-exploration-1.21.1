@@ -17,12 +17,20 @@ import static net.minecraft.text.Texts.toText;
 public class CECommands {
     public void Initialize(){}
     private static int sendSuccessFeedback(ServerCommandSource source, String message) {
-//        source.sendFeedback(message);
+        if (source.getEntity() instanceof ServerPlayerEntity player) {
+            player.sendMessage(toText(new LiteralMessage(message)));
+        } else {
+            System.out.println(message);
+        }
         return 1;
     }
 
     private static int sendErrorFeedback(ServerCommandSource source, String errorMessage) {
-//        source.sendError(errorMessage);
+        if (source.getEntity() instanceof ServerPlayerEntity player) {
+            player.sendMessage(toText(new LiteralMessage(errorMessage)));
+        } else {
+            System.out.println(errorMessage);
+        }
         return 0;
     }
     public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -87,7 +95,7 @@ public class CECommands {
                             ServerCommandSource source = context.getSource();
                             if (source.getEntity() instanceof ServerPlayerEntity player) {
                                 int level = CEPlayer.getCELevel(player);
-                                player.sendMessage(toText(new LiteralMessage("您的等级为: " + level)));
+                                sendSuccessFeedback(source,"您的等级为: " + level);
                                 return level; // 返回等级信息
                             }
                             return 0;
