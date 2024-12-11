@@ -1,6 +1,7 @@
 package top.bearcabbage.chainedexploration;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,12 @@ public class ChainedExploration implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+
+		// 使用CommandRegistrationCallback.EVENT注册命令
+
+		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+			ClanCommands.registerCommands(dispatcher); // 调用静态方法注册命令
+		});
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.

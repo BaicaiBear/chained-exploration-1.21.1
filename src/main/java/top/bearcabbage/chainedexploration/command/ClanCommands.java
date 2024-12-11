@@ -6,19 +6,21 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import top.bearcabbage.chainedexploration.team.TeamManager;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class ClanCommands {
+    public void Initialize(){}
 
     private static int sendSuccessFeedback(ServerCommandSource source, String key, Object... args) {
-        source.sendFeedback(() -> Text.translatable(key, args), true);
+ //       source.sendFeedback(() -> Text.translatable(key, args), true);
         return 1;
     }
 
     private static int sendErrorFeedback(ServerCommandSource source, String key, Object... args) {
-        source.sendError(() -> Text.translatable(key, args));
+//        source.sendError(() -> Text.translatable(key, args));
         return 0;
     }
 
