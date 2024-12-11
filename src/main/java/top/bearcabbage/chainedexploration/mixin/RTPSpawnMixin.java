@@ -17,15 +17,4 @@ import java.util.Iterator;
 @Mixin(SpawnPointCommand.class)
 public class RTPSpawnMixin {
 
-
-    @Inject(at = @At("TAIL"), method = "execute")
-	private static void execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, BlockPos pos, float angle, CallbackInfoReturnable<Integer> cir) {
-		RegistryKey<World> registryKey = source.getWorld().getRegistryKey();
-		Iterator var5 = targets.iterator();
-		while(var5.hasNext()) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)var5.next();
-			RespawnPositionMixin.setRtpSpawn() = pos;
-
-		}
-	}
 }

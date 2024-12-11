@@ -29,8 +29,7 @@
 		"fabricloader": ">=0.16.9",
 		"minecraft": "~1.21.1",
 		"java": ">=21",
-		"fabric-api": "*",
-		"bclib": "21.0.x"
+		"fabric-api": "*"
 	},
 	"suggests": {
 		"another-mod": "*"
