@@ -2,12 +2,14 @@ package top.bearcabbage.chainedexploration.teamhor;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import net.minecraft.server.network.ServerPlayerEntity;
 import top.bearcabbage.chainedexploration.player.CEPlayerManager;
 
 public class CETeamManager {
-    private static final Map<String, CETeam> teamList = new HashMap<>();
+    private static final Map<ServerPlayerEntity, CETeam> teamList = new HashMap<>();
 
-    public static boolean createOrJoinTeam(String playerJoining, String targetPlayer) {
+    public static boolean createOrJoinTeam(ServerPlayerEntity playerJoining, ServerPlayerEntity targetPlayer) {
         if (!teamList.containsKey(targetPlayer)) {
             //目标玩家不在线，直接返回失败
             if (!CEPlayerManager.isPlayerOnline(targetPlayer)) {
@@ -24,10 +26,10 @@ public class CETeamManager {
         }
     }
 
-    public static boolean removeMemberFromTeam(String playerNameToRemove, String teamLeader) {
+    public static boolean removeMemberFromTeam(ServerPlayerEntity playerToRemove, String teamLeader) {
         if (teamList.containsKey(teamLeader)) {
             CETeam CETeam = teamList.get(teamLeader);
-            return CETeam.removeMember(playerNameToRemove);
+            return CETeam.removeMember(playerToRemove);
         }
         return false;
     }
@@ -47,8 +49,8 @@ public class CETeamManager {
         return true;
     }
 
-    public static boolean quitTeam(String playerName) {
-        for (Map.Entry<String, CETeam> entry : teamList.entrySet()) {
+    public static boolean quitTeam(ServerPlayerEntity playerName) {
+        for (Map.Entry<ServerPlayerEntity, CETeam> entry : teamList.entrySet()) {
             CETeam team = entry.getValue();
             if (team.getMembers().contains(playerName)) {
                 // 玩家存在于某个队伍中
@@ -67,12 +69,12 @@ public class CETeamManager {
 
     public static String listAllTeams() {
         StringBuilder allTeamsInfo = new StringBuilder("当前所有队伍列表:\n");
-        for (Map.Entry<String, CETeam> entry : teamList.entrySet()) {
+        for (Map.Entry<ServerPlayerEntity, CETeam> entry : teamList.entrySet()) {
             CETeam team = entry.getValue();
             allTeamsInfo.append("队伍名称: ").append(team.getLeader()).append("\n")
                     .append("队长: ").append(team.getLeader()).append("\n")
                     .append("成员: ");
-            for (String member : team.getMembers()) {
+            for (ServerPlayerEntity member : team.getMembers()) {
                 if (!team.getLeader().equals(member)) {
                     allTeamsInfo.append(member).append(", ");
                 }

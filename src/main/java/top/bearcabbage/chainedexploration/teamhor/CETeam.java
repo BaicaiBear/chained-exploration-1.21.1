@@ -1,24 +1,26 @@
 package top.bearcabbage.chainedexploration.teamhor;
 
+import net.minecraft.server.network.ServerPlayerEntity;
+
 import java.util.HashSet;
 import java.util.Set;
 
 public class CETeam {
-    private String leader;
-    private Set<String> members;
+    private ServerPlayerEntity leader;
+    private Set<ServerPlayerEntity> members;
 
-    public CETeam(String leader) {
+    public CETeam(ServerPlayerEntity leader) {
         this.leader = leader;
         this.members = new HashSet<>();
         members.add(leader);
     }
 
-    public boolean addMember(String playerName) {
-        return members.add(playerName);
+    public boolean addMember(ServerPlayerEntity player) {
+        return members.add(player);
     }
 
-    public boolean removeMember(String playerName) {
-        return members.remove(playerName);
+    public boolean removeMember(ServerPlayerEntity player) {
+        return members.remove(player);
     }
 
     // 解散队伍，仅队长可以执行此操作
@@ -30,11 +32,11 @@ public class CETeam {
         return false;
     }
 
-    public String getLeader() {
+    public ServerPlayerEntity getLeader() {
         return leader;
     }
 
-    public Set<String> getMembers() {
+    public Set<ServerPlayerEntity> getMembers() {
         return members;
     }
 }

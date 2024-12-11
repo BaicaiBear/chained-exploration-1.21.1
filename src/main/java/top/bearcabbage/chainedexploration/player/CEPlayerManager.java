@@ -6,7 +6,9 @@ import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.PlayerSaveHandler;
+import top.bearcabbage.chainedexploration.interfaces.CEPlayerManagerAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,10 @@ public class CEPlayerManager extends PlayerManager {
     }
 
 
-
-
+    public static boolean isPlayerOnline(ServerPlayerEntity targetPlayer) {
+        if(targetPlayer.getServer().getPlayerManager() instanceof CEPlayerManagerAccessor playerManagerAccessor) {
+            return playerManagerAccessor.uuid2Player(targetPlayer.getUuidAsString()) != null;
+        }
+        return false;
+    }
 }

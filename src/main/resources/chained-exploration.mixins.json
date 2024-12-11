@@ -3,8 +3,9 @@
   "package": "top.bearcabbage.chainedexploration.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "SpawnPointCommandMixin",
-    "ServerPlayerEntityMixin"
+    "PlayerManagerMixin",
+    "ServerPlayerEntityMixin",
+    "SpawnPointCommandMixin"
   ],
   "injectors": {
     "defaultRequire": 1
