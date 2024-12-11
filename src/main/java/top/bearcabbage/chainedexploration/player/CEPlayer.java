@@ -1,25 +1,46 @@
 package top.bearcabbage.chainedexploration.player;
 
-import com.mojang.authlib.GameProfile;
-import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
-import net.minecraft.server.MinecraftServer;
+import eu.pb4.playerdata.api.PlayerDataApi;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import top.bearcabbage.chainedexploration.bond.CEBond;
+import top.bearcabbage.chainedexploration.ChainedExploration;
 
-public class CEPlayer extends ServerPlayerEntity {
+public class CEPlayer {
 
-    private int CELevel;
+    private void onTick(ServerPlayerEntity player) {
 
-    public CEPlayer(MinecraftServer server, ServerWorld world, GameProfile profile, SyncedClientOptions clientOptions) {
-        super(server, world, profile, clientOptions);
     }
 
-
-    public int getRadius(){
-        return 0;
+    public int getCELevel(ServerPlayerEntity player) {
+        NbtCompound data = PlayerDataApi.getCustomDataFor(player, ChainedExploration.CE_LEVEL);
+        return data != null ? data.getInt("ce_level") : 0;
     }
 
-    public void joinBond(CEBond ceBond) {
+    public void setCELevel(ServerPlayerEntity player,int level) {
+        NbtCompound data = new NbtCompound();
+        data.putInt("ce_level", level);
+        PlayerDataApi.setCustomDataFor(player, ChainedExploration.CE_LEVEL, data);
+    }
+
+    public void levelUP(ServerPlayerEntity player) {
+        int level = getCELevel(player);
+        if (level < CELevel.LEVELS.size() - 1) {
+            setCELevel(player,level + 1);
+        }
+    }
+
+    public boolean isTeamed(ServerPlayerEntity player) {
+        NbtCompound data = PlayerDataApi.getCustomDataFor(player, ChainedExploration.CE_ISTEAMED);
+        return data != null && data.getBoolean("ce_isteamed");
+    }
+
+    public boolean joinTeam(ServerPlayerEntity player) {
+        if(!isTeamed(player)) {
+            return false;
+        }
+        NbtCompound data = new NbtCompound();
+        data.putBoolean("ce_isteamed", true);
+        PlayerDataApi.setCustomDataFor(player, ChainedExploration.CE_ISTEAMED, data);
+        return true;
     }
 }

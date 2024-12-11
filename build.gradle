@@ -17,6 +17,8 @@ repositories {
 	maven {
 		url 'https://repository.hanbings.io/proxy'
 	}
+	//Player Data API
+	maven { url 'https://maven.nucleoid.xyz' }
 }
 fabricApi {
 	configureDataGeneration {
@@ -33,6 +35,8 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+	//Player Data API
+	modImplementation include("eu.pb4:player-data-api:0.6.0+1.21")
 }
 
 processResources {
