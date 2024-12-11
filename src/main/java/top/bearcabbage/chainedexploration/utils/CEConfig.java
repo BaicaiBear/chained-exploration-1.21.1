@@ -66,7 +66,7 @@ public class CEConfig extends ChainedExploration {
         jsonObject.addProperty(key, value);
     }
 
-    public void set(String key, Map<String, Object> value) {
+    public void set(String key, Map<String, Vector<Integer>> value) {
         jsonObject.add(key, gson.toJsonTree(value));
     }
 
@@ -98,7 +98,7 @@ public class CEConfig extends ChainedExploration {
         return jsonObject.get(key).getAsBoolean();
     }
 
-    public Map<String, Object> getMap(String key) {
+    public Map<String, Vector<Integer>> getMap(String key) {
         return gson.fromJson(jsonObject.get(key), Map.class);
     }
 
