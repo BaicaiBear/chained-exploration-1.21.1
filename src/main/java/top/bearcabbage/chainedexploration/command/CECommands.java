@@ -1,14 +1,18 @@
 package top.bearcabbage.chainedexploration.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.LiteralMessage;
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import top.bearcabbage.chainedexploration.player.CEPlayer;
 import top.bearcabbage.chainedexploration.teamhor.TeamManager;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.text.Texts.toText;
 
 public class CECommands {
     public void Initialize(){}
@@ -75,7 +79,6 @@ public class CECommands {
         );
 
         //ce指令
-        /*
         dispatcher.register(literal("ce")
                 // 查询玩家等级的子命令
                 .then(literal("getlevel")
@@ -83,14 +86,15 @@ public class CECommands {
                         .executes(context -> {
                             ServerCommandSource source = context.getSource();
                             if (source.getEntity() instanceof ServerPlayerEntity player) {
-                                int level = GetLevel.getLevel(player);
-                                source.sendFeedback(() -> "您的等级是: " + level, false);
+                                int level = CEPlayer.getCELevel(player);
+                                player.sendMessage(toText(new LiteralMessage("您的等级为: " + level)));
                                 return level; // 返回等级信息
                             }
-                            source.sendError(() -> "只能由玩家执行此命令");
                             return 0;
                         })
                 )
+        );
+                /*
                 // 设置玩家等级的子命令
                 .then(literal("setlevel")
                         .requires(source -> source.hasPermissionLevel(0))

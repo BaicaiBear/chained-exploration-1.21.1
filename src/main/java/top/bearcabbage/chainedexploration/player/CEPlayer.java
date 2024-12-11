@@ -11,7 +11,7 @@ public class CEPlayer {
 
     }
 
-    public int getCELevel(ServerPlayerEntity player) {
+    public static int getCELevel(ServerPlayerEntity player) {
         NbtCompound data = PlayerDataApi.getCustomDataFor(player, ChainedExploration.CE_LEVEL);
         return data != null ? data.getInt("ce_level") : 0;
     }
