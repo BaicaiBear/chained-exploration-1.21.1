@@ -19,10 +19,5 @@ public class ChainedExploration implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
-		CEConfig config = new CEConfig(FabricLoader.getInstance().getConfigDir().resolve("chained-exploration.json"));
-		config.set("test", "QAQ");
-		config.save();
-		LOGGER.info(config.getString("test"));
-		LOGGER.info("Hello Fabric world!");
 	}
 }

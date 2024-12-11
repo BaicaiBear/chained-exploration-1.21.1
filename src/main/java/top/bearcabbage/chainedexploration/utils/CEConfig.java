@@ -25,6 +25,9 @@ public class CEConfig extends ChainedExploration {
         this.filePath = filePath;
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         try {
+            if (Files.notExists(filePath.getParent())) {
+                Files.createDirectories(filePath.getParent());
+            }
             if (Files.notExists(filePath)) {
                 Files.createFile(filePath);
                 try (FileWriter writer = new FileWriter(filePath.toFile())) {
@@ -86,6 +89,10 @@ public class CEConfig extends ChainedExploration {
         jsonObject.addProperty(key, value);
     }
 
+    public void set(String key, CEVec3d value) {
+        jsonObject.add(key, gson.toJsonTree(value));
+    }
+
     public int getInt(String key) {
         return jsonObject.get(key).getAsInt();
     }
@@ -112,6 +119,10 @@ public class CEConfig extends ChainedExploration {
 
     public String getString(String key) {
         return gson.fromJson(jsonObject.get(key), String.class);
+    }
+
+    public CEVec3d getCEVec3d(String key) {
+        return gson.fromJson(jsonObject.get(key), CEVec3d.class);
     }
 
     public <T> T get(String key, Class<T> clazz) {
