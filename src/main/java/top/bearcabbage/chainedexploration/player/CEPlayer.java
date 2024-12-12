@@ -177,6 +177,9 @@ public class CEPlayer {
         return this.spawnWorld;
     }
 
+    public double getRadius(){
+        return CELevel.RADIUS.get(this.level);
+    }
     public void onDeath() {
 
     }
