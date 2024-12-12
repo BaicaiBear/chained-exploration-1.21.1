@@ -135,7 +135,11 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements CE
         }
     }
 
-
+    @Inject(method = "onDeath", at = @At("TAIL"))
+    private void onDeath(CallbackInfo ci) {
+        CEPlayerAccessor player = (CEPlayerAccessor) this;
+        player.getCE().onDeath();
+    }
 
     //CEPlayer日常任务
     @Inject(method = "tick", at = @At("HEAD"))

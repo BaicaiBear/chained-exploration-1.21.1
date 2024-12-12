@@ -1,21 +1,14 @@
 package top.bearcabbage.chainedexploration.player;
 
 import eu.pb4.playerdata.api.PlayerDataApi;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.render.entity.feature.WolfArmorFeatureRenderer;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import top.bearcabbage.chainedexploration.ChainedExploration;
 import top.bearcabbage.chainedexploration.teamhor.CETeam;
-
-import java.nio.file.Path;
 
 import static top.bearcabbage.chainedexploration.utils.CEMath.HorizontalDistance;
 
@@ -182,5 +175,9 @@ public class CEPlayer {
 
     public RegistryKey<World> getSpawnPointDimension() {
         return this.spawnWorld;
+    }
+
+    public void onDeath() {
+
     }
 }
