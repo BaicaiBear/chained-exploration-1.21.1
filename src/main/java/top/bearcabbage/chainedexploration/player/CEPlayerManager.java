@@ -26,10 +26,4 @@ public class CEPlayerManager extends PlayerManager {
     }
 
 
-    public static boolean isPlayerOnline(ServerPlayerEntity targetPlayer) {
-        if(targetPlayer.getServer().getPlayerManager() instanceof CEPlayerManagerAccessor playerManagerAccessor) {
-            return playerManagerAccessor.uuid2Player(targetPlayer.getUuidAsString()) != null;
-        }
-        return false;
-    }
 }

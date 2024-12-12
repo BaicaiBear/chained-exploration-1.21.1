@@ -15,11 +15,11 @@ public class ChainedExploration implements ModInitializer {
 	public static final String MOD_ID = "chained-exploration";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static final NbtDataStorage CE_LEVEL = new NbtDataStorage("ce_level");
+	public static final NbtDataStorage CEData = new NbtDataStorage("CE_Data");
 	@Override
 	public void onInitialize() {
 		// 获取配置文件
-		PlayerDataApi.register(CE_LEVEL);
+		PlayerDataApi.register(CEData);
 		// 使用CommandRegistrationCallback.EVENT注册命令
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment)->CECommands.registerCommands(dispatcher)); // 调用静态方法注册命令
 

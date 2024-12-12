@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.bearcabbage.chainedexploration.rtpspawn.CERtpSpawn;
+import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -24,7 +24,9 @@ public class SpawnPointCommandMixin {
         Iterator<ServerPlayerEntity> iterator = targets.iterator();
         while (iterator.hasNext()) {
             ServerPlayerEntity serverPlayerEntity = iterator.next();
-            new CERtpSpawn(serverPlayerEntity.getName()).setRtpSpawn(pos);
+            if(serverPlayerEntity instanceof CEPlayerAccessor cePlayerAccessor){
+                cePlayerAccessor.getCE().setRtpSpawn(pos);
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
 import top.bearcabbage.chainedexploration.player.CEPlayer;
 import top.bearcabbage.chainedexploration.teamhor.CETeamManager;
 
@@ -126,7 +127,7 @@ public class CECommands {
                                 .executes(context -> {
                                     ServerCommandSource source = context.getSource();
                                     ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
-                                    int level = CEPlayer.getCELevel(targetPlayer);
+                                    int level = (targetPlayer instanceof CEPlayerAccessor cePlayerAccessor) ? cePlayerAccessor.getCE().getCELevel() : -1;
                                     return sendSuccessFeedback(source, targetPlayer.getName().getString() + " 的CE等级为: " + level);
                                 })
                         )
@@ -138,7 +139,7 @@ public class CECommands {
                                                     ServerCommandSource source = context.getSource();
                                                     ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
                                                     int newLevel = IntegerArgumentType.getInteger(context, "level");
-                                                    if (CEPlayer.setCELevel(targetPlayer, newLevel)) {
+                                                    if (targetPlayer instanceof CEPlayerAccessor cePlayerAccessor && cePlayerAccessor.getCE().setCELevel(newLevel)) {
                                                         return sendSuccessFeedback(source, "成功设置 " + targetPlayer.getName().getString() + " 的等级为: " + newLevel);
                                                     } else {
                                                         return sendErrorFeedback(source, "无法设置等级: 请确保等级在0-4之间且玩家在线");
@@ -151,7 +152,7 @@ public class CECommands {
                         .executes(context -> {
                             ServerCommandSource source = context.getSource();
                             if (source.getEntity() instanceof ServerPlayerEntity player) {
-                                int level = CEPlayer.getCELevel(player);
+                                int level = (player instanceof CEPlayerAccessor cePlayerAccessor) ? cePlayerAccessor.getCE().getCELevel() : -1;
                                 sendSuccessFeedback(source, "您的CE等级为: " + level);
                                 return level; // 返回等级信息
                             }
