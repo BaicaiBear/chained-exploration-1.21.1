@@ -115,6 +115,9 @@ public class CEPlayer {
     }
 
     public boolean setSpawnPoint(RegistryKey<World> worldRegistryKey, BlockPos pos, float Yaw) {
+        if(rtpSpawn == null){
+            rtpSpawn = player.getServerWorld().getSpawnPos();
+        }
         if (worldRegistryKey == World.OVERWORLD) {
             if (HorizontalDistance(rtpSpawn, pos) <= CELevel.RADIUS.get(this.level)) {
                 this.spawnWorld = worldRegistryKey;
