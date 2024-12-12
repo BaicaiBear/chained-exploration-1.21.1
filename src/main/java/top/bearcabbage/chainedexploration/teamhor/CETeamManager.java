@@ -55,12 +55,12 @@ public class CETeamManager {
     private static final Map<UUID, TeamInvite> pendingInvitations = new HashMap<>();
 
     // 发送邀请
-    public static boolean sendInvitation(ServerPlayerEntity sender, ServerPlayerEntity recipient) {/*
+    public static boolean sendInvitation(ServerPlayerEntity sender, ServerPlayerEntity recipient) {
         if (!pendingInvitations.values().stream().anyMatch(invite -> invite.getRecipient().equals(recipient))) {
-            pendingInvitations.put(recipient.getUuid(), new TeamInvite(sender, recipient));
+//            pendingInvitations.put(recipient.getUuid(), new TeamInvite(sender, recipient));
             // 实际游戏中，这里应添加代码发送实际的邀请消息给recipient
             return true;
-        }*/
+        }
         return false; // 如果已经有未处理的邀请，则不再发送新的邀请
     }
 
