@@ -20,11 +20,10 @@ import top.bearcabbage.chainedexploration.player.CEPlayer;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin implements CEPlayerAccessor {
 
-    @Unique
-    private CEPlayer CE;
-
     @Shadow public abstract ServerWorld getServerWorld();
 
+    @Unique
+    private CEPlayer CE;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
@@ -47,9 +46,9 @@ public abstract class ServerPlayerEntityMixin implements CEPlayerAccessor {
         ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
         BlockPos spawnPos =  this.CE.getRtpSpawn();
         if(spawnPos == null){
-            spawnPos = this.getServerWorld().getSpawnPos();
+            spawnPos = this.getServerWorld().getServer().getOverworld().getSpawnPos();
         }
-        cir.setReturnValue(new TeleportTarget(getServerWorld(),spawnPos.toCenterPos(), Vec3d.ZERO, 0.0F, 0.0F, postDimensionTransition));
+        cir.setReturnValue(new TeleportTarget(this.getServerWorld().getServer().getOverworld(),spawnPos.toCenterPos(), Vec3d.ZERO, 0.0F, 0.0F, postDimensionTransition));
     }
 
     //CEPlayer日常任务
