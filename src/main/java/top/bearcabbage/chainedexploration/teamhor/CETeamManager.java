@@ -3,6 +3,7 @@ package top.bearcabbage.chainedexploration.teamhor;
 import java.util.HashMap;
 import java.util.Map;
 
+import top.bearcabbage.chainedexploration.player.CEPlayer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import top.bearcabbage.chainedexploration.player.CEPlayerManager;
 
@@ -11,6 +12,11 @@ public class CETeamManager {
 
     public static boolean createOrJoinTeam(ServerPlayerEntity playerJoining, ServerPlayerEntity targetPlayer) {
         if (!teamList.containsKey(targetPlayer)) {
+            // 检查playerJoining是否已在队伍中
+            if (CEPlayer.isTeamed(playerJoining)) {
+                // 如果playerJoining已在队伍中，则返回失败
+                return false;
+            }
             //目标玩家不在线，直接返回失败
             if (!CEPlayerManager.isPlayerOnline(targetPlayer)) {
                 return false;
@@ -18,6 +24,8 @@ public class CETeamManager {
             // 目标玩家没有队伍，创建新队伍
             CETeam newCETeam = new CETeam(targetPlayer);
             teamList.put(targetPlayer, newCETeam);
+            CEPlayer.joinTeam(playerJoining);
+            CEPlayer.joinTeam(targetPlayer);
             return newCETeam.addMember(playerJoining);
         } else {
             // 目标玩家已有队伍，尝试加入

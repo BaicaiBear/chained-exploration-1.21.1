@@ -31,12 +31,12 @@ public class CEPlayer {
         }
     }
 
-    public boolean isTeamed(ServerPlayerEntity player) {
+    public static boolean isTeamed(ServerPlayerEntity player) {
         NbtCompound data = PlayerDataApi.getCustomDataFor(player, ChainedExploration.CE_LEVEL);
         return data != null && data.getBoolean("ce_isteamed");
     }
 
-    public boolean joinTeam(ServerPlayerEntity player) {
+    public static boolean joinTeam(ServerPlayerEntity player) {
         if(!isTeamed(player)) {
             return false;
         }
