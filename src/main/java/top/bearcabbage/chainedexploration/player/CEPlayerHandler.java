@@ -7,6 +7,6 @@ import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
 public class CEPlayerHandler {
 
     private static void onTick(ServerPlayerEntity player) {
-        BlockPos selfCenter = player.getRespawnTarget(false, )
+
     }
 }

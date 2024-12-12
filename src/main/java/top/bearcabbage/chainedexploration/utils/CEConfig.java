@@ -2,7 +2,6 @@ package top.bearcabbage.chainedexploration.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import top.bearcabbage.chainedexploration.ChainedExploration;
@@ -89,10 +88,6 @@ public class CEConfig extends ChainedExploration {
         jsonObject.addProperty(key, value);
     }
 
-    public void set(String key, CEVec3d value) {
-        jsonObject.add(key, gson.toJsonTree(value));
-    }
-
     public int getInt(String key) {
         return jsonObject.get(key).getAsInt();
     }
@@ -119,10 +114,6 @@ public class CEConfig extends ChainedExploration {
 
     public String getString(String key) {
         return gson.fromJson(jsonObject.get(key), String.class);
-    }
-
-    public CEVec3d getCEVec3d(String key) {
-        return gson.fromJson(jsonObject.get(key), CEVec3d.class);
     }
 
     public <T> T get(String key, Class<T> clazz) {

@@ -6,10 +6,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import top.bearcabbage.chainedexploration.ChainedExploration;
-import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
 import top.bearcabbage.chainedexploration.teamhor.CETeam;
-import top.bearcabbage.chainedexploration.utils.CEConfig;
-import top.bearcabbage.chainedexploration.utils.CEVec3d;
 
 import java.nio.file.Path;
 
