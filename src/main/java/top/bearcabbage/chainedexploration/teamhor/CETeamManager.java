@@ -34,6 +34,10 @@ public class CETeamManager {
         }
     }
 
+    public static boolean acceptInvitation(ServerPlayerEntity player) {
+        return false;
+    }
+
     public class TeamInvite {/*
         private ServerPlayerEntity sender;
         private ServerPlayerEntity recipient;
@@ -62,7 +66,7 @@ public class CETeamManager {
             return true;
         }
         return false; // 如果已经有未处理的邀请，则不再发送新的邀请
-    */}
+    }
 
     // 接受邀请
     public static boolean acceptInvitation(ServerPlayerEntity player) {/*
@@ -73,15 +77,17 @@ public class CETeamManager {
                 pendingInvitations.remove(player.getUuid());
                 return true;
             }
-        }
-        return false;*/
+        }*/
+        return false;
     }
 
     // 拒绝邀请
     public static boolean denyInvitation(ServerPlayerEntity player) {/*
         return pendingInvitations.remove(player.getUuid()) != null;
-    */}
     */
+        return false;
+    }
+
     public static boolean removeMember(ServerPlayerEntity playerToRemove, ServerPlayerEntity teamLeader) {
         if (teamList.containsKey(teamLeader)) {
             CETeam CETeam = teamList.get(teamLeader);
