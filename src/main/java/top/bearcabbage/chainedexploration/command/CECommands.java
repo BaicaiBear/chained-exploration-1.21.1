@@ -44,13 +44,10 @@ public class CECommands {
                         .executes(context -> {
                             ServerCommandSource source = context.getSource();
                             if (source.getEntity() instanceof ServerPlayerEntity player) {
-
                                 ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
-                                // 确保目标玩家不是命令执行者自己
                                 if (targetPlayer.getUuid().equals(player.getUuid())) {
                                     return sendErrorFeedback(source, "不能向自己发送队伍邀请");
                                 }
-
                                 if (CETeamManager.sendInvitation(player, targetPlayer)) {
                                     return sendSuccessFeedback(source, "已向 " + targetPlayer.getName().getLiteralString() + " 发送队伍邀请");
                                 } else {
@@ -60,7 +57,8 @@ public class CECommands {
                             return 0;
                         })
                 ));
-        // 添加接受邀请子命令
+
+        // 接受邀请子命令
         cetRoot.then(literal("accept")
                 .executes(context -> {
                     ServerCommandSource source = context.getSource();
@@ -75,7 +73,7 @@ public class CECommands {
                 })
         );
 
-        // 添加拒绝邀请子命令
+        // 拒绝邀请子命令
         cetRoot.then(literal("deny")
                 .executes(context -> {
                     ServerCommandSource source = context.getSource();
@@ -89,6 +87,7 @@ public class CECommands {
                     return 0;
                 })
         );
+
         // 退出队伍子命令
         cetRoot.then(literal("quit")
                 .executes(context -> {
@@ -103,6 +102,7 @@ public class CECommands {
                     return 0;
                 })
         );
+
         // 移除队员子命令
         cetRoot.then(literal("remove")
                 .then(argument("player", EntityArgumentType.player())
@@ -110,6 +110,9 @@ public class CECommands {
                             ServerCommandSource source = context.getSource();
                             if (source.getEntity() instanceof ServerPlayerEntity player) {
                                 ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "player");
+                                if (player.getUuid().equals(targetPlayer.getUuid())) {
+                                    return sendErrorFeedback(source, "您不能移除自己");
+                                }
                                 if (CETeamManager.removeMember(targetPlayer, player)) {
                                     return sendSuccessFeedback(source, "成功移除队员: " + targetPlayer.getName().getLiteralString());
                                 } else {
@@ -151,47 +154,51 @@ public class CECommands {
 
         dispatcher.register(cetRoot);
 
-        //  ce 命令及其子命令
-        dispatcher.register(literal("ce")
-                // 查询玩家等级的子命令
-                .then(literal("level")
-                        .then(argument("targetPlayer", EntityArgumentType.player())
+        // ce 命令及其子命令
+        LiteralArgumentBuilder<ServerCommandSource> ceRoot = literal("ce")
+                .requires(source -> source.hasPermissionLevel(0));
+
+        // 查询level
+        ceRoot.then(literal("level")
+                .then(argument("targetPlayer", EntityArgumentType.player())
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .executes(context -> {
+                            ServerCommandSource source = context.getSource();
+                            ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
+                            int level = (targetPlayer instanceof CEPlayerAccessor cePlayerAccessor) ? cePlayerAccessor.getCE().getCELevel() : -1;
+                            return sendSuccessFeedback(source, targetPlayer.getName().getLiteralString() + " 的CE等级为: " + level);
+                        })
+                ));
+
+        // 设置level子命令
+        ceRoot.then(argument("targetPlayer", EntityArgumentType.player())
+                .then(literal("set")
+                        .then(argument("level", IntegerArgumentType.integer(0))
                                 .requires(source -> source.hasPermissionLevel(2))
                                 .executes(context -> {
                                     ServerCommandSource source = context.getSource();
                                     ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
-                                    int level = (targetPlayer instanceof CEPlayerAccessor cePlayerAccessor) ? cePlayerAccessor.getCE().getCELevel() : -1;
-                                    return sendSuccessFeedback(source, targetPlayer.getName().getLiteralString() + " 的CE等级为: " + level);
+                                    int newLevel = IntegerArgumentType.getInteger(context, "level");
+                                    if (targetPlayer instanceof CEPlayerAccessor cePlayerAccessor && cePlayerAccessor.getCE().setCELevel(newLevel)) {
+                                        return sendSuccessFeedback(source, "成功设置 " + targetPlayer.getName().getLiteralString() + " 的等级为: " + newLevel);
+                                    } else {
+                                        return sendErrorFeedback(source, "无法设置等级: 请确保等级在0-4之间且玩家在线");
+                                    }
                                 })
                         )
-                        .then(argument("targetPlayer", EntityArgumentType.player())
-                                .then(literal("set")
-                                        .then(argument("level", IntegerArgumentType.integer(0))
-                                                .requires(source -> source.hasPermissionLevel(2))
-                                                .executes(context -> {
-                                                    ServerCommandSource source = context.getSource();
-                                                    ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
-                                                    int newLevel = IntegerArgumentType.getInteger(context, "level");
-                                                    if (targetPlayer instanceof CEPlayerAccessor cePlayerAccessor && cePlayerAccessor.getCE().setCELevel(newLevel)) {
-                                                        return sendSuccessFeedback(source, "成功设置 " + targetPlayer.getName().getLiteralString() + " 的等级为: " + newLevel);
-                                                    } else {
-                                                        return sendErrorFeedback(source, "无法设置等级: 请确保等级在0-4之间且玩家在线");
-                                                    }
-                                                })
-                                        )
-                                )
-                        )
-                        .requires(source -> source.hasPermissionLevel(0))
-                        .executes(context -> {
-                            ServerCommandSource source = context.getSource();
-                            if (source.getEntity() instanceof ServerPlayerEntity player) {
-                                int level = (player instanceof CEPlayerAccessor cePlayerAccessor) ? cePlayerAccessor.getCE().getCELevel() : -1;
-                                sendSuccessFeedback(source, "您的CE等级为: " + level);
-                                return level; // 返回等级信息
-                            }
-                            return 0;
-                        })
                 )
+                .requires(source -> source.hasPermissionLevel(0))
+                .executes(context -> {
+                    ServerCommandSource source = context.getSource();
+                    if (source.getEntity() instanceof ServerPlayerEntity player) {
+                        int level = (player instanceof CEPlayerAccessor cePlayerAccessor) ? cePlayerAccessor.getCE().getCELevel() : -1;
+                        sendSuccessFeedback(source, "您的CE等级为: " + level);
+                        return level; // 返回等级信息
+                    }
+                    return 0;
+                })
         );
+
+        dispatcher.register(ceRoot);
     }
 }
