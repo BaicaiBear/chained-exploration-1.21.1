@@ -2,7 +2,6 @@ package top.bearcabbage.chainedexploration.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
@@ -56,7 +55,20 @@ public class CECommands {
                             return 0;
                         })
                 ));
-
+        // 退出队伍子命令
+        cetRoot.then(literal("quit")
+                .executes(context -> {
+                    ServerCommandSource source = context.getSource();
+                    if (source.getEntity() instanceof ServerPlayerEntity player) {
+                        if (CETeamManager.quitTeam(player)) {
+                            return sendSuccessFeedback(source, "成功退出队伍");
+                        } else {
+                            return sendErrorFeedback(source, "无法退出队伍: 您没有在任何队伍中或者您是队长，需要先解散队伍");
+                        }
+                    }
+                    return 0;
+                })
+        );
         // 移除队员子命令
         cetRoot.then(literal("remove")
                 .then(argument("player", EntityArgumentType.player())
@@ -93,13 +105,11 @@ public class CECommands {
         cetRoot.then(literal("list")
                 .executes(context -> {
                     ServerCommandSource source = context.getSource();
-                    if (source.getEntity() instanceof ServerPlayerEntity player) {
-                        String allTeamsInfo = CETeamManager.listAllTeams();
-                        if (!allTeamsInfo.isEmpty()) {
-                            sendSuccessFeedback(source, allTeamsInfo);
-                        } else {
-                            sendErrorFeedback(source, "当前没有队伍存在");
-                        }
+                    String allTeamsInfo = CETeamManager.listAllTeams();
+                    if (allTeamsInfo.equals("当前所有队伍列表:")) {
+                        sendErrorFeedback(source, "当前没有队伍存在");
+                    } else {
+                        sendSuccessFeedback(source, allTeamsInfo);
                     }
                     return 1;
                 })
