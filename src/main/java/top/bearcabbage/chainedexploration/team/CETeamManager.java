@@ -1,4 +1,4 @@
-package top.bearcabbage.chainedexploration.teamhor;
+package top.bearcabbage.chainedexploration.team;
 
 import java.util.HashMap;
 import java.util.Map;

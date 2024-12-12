@@ -1,4 +1,4 @@
-package top.bearcabbage.chainedexploration.teamhor;
+package top.bearcabbage.chainedexploration.team;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 

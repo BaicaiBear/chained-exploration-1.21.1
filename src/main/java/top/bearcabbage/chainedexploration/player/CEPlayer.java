@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import top.bearcabbage.chainedexploration.ChainedExploration;
-import top.bearcabbage.chainedexploration.teamhor.CETeam;
+import top.bearcabbage.chainedexploration.team.CETeam;
 
 import static top.bearcabbage.chainedexploration.utils.CEMath.HorizontalDistance;
 

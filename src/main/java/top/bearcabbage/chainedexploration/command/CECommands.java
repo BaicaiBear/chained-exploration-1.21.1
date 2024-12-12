@@ -8,7 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
-import top.bearcabbage.chainedexploration.teamhor.CETeamManager;
+import top.bearcabbage.chainedexploration.team.CETeamManager;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
