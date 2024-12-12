@@ -2,6 +2,7 @@ package top.bearcabbage.chainedexploration.teamhor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
 import top.bearcabbage.chainedexploration.player.CEPlayer;
@@ -18,11 +19,7 @@ public class CETeamManager {
                 // 如果playerJoining已在队伍中，则返回失败
                 return false;
             }
-            //目标玩家不在线，直接返回失败
-//            if (!CEPlayerManager.isPlayerOnline(targetPlayer)) {
-//                return false;
-//            }
-            // 目标玩家没有队伍，创建新队伍
+
             CETeam newCETeam = new CETeam(targetPlayer);
             teamList.put(targetPlayer, newCETeam);
             if(playerJoining instanceof CEPlayerAccessor playerJoiningAccessor){
@@ -39,6 +36,54 @@ public class CETeamManager {
         }
     }
 
+    public class TeamInvite {/*
+        private ServerPlayerEntity sender;
+        private ServerPlayerEntity recipient;
+
+        public TeamInvite(ServerPlayerEntity sender, ServerPlayerEntity recipient) {
+            this.sender = sender;
+            this.recipient = recipient;
+        }
+
+        public ServerPlayerEntity getSender() {
+            return sender;
+        }
+
+        public ServerPlayerEntity getRecipient() {
+            return recipient;
+        }*/
+    }
+    // 添加一个邀请列表，用来存储未处理的邀请
+    private static final Map<UUID, TeamInvite> pendingInvitations = new HashMap<>();
+
+    // 发送邀请
+    public static boolean sendInvitation(ServerPlayerEntity sender, ServerPlayerEntity recipient) {/*
+        if (!pendingInvitations.values().stream().anyMatch(invite -> invite.getRecipient().equals(recipient))) {
+            pendingInvitations.put(recipient.getUuid(), new TeamInvite(sender, recipient));
+            // 实际游戏中，这里应添加代码发送实际的邀请消息给recipient
+            return true;
+        }
+        return false; // 如果已经有未处理的邀请，则不再发送新的邀请
+    */}
+
+    // 接受邀请
+    public static boolean acceptInvitation(ServerPlayerEntity player) {/*
+        TeamInvite invitation = pendingInvitations.get(player.getUuid());
+        if (invitation != null) {
+            // 处理接受逻辑，例如加入队伍
+            if (createOrJoinTeam(player, invitation.getSender())) {
+                pendingInvitations.remove(player.getUuid());
+                return true;
+            }
+        }
+        return false;*/
+    }
+
+    // 拒绝邀请
+    public static boolean denyInvitation(ServerPlayerEntity player) {/*
+        return pendingInvitations.remove(player.getUuid()) != null;
+    */}
+    */
     public static boolean removeMember(ServerPlayerEntity playerToRemove, ServerPlayerEntity teamLeader) {
         if (teamList.containsKey(teamLeader)) {
             CETeam CETeam = teamList.get(teamLeader);
@@ -100,5 +145,5 @@ public class CETeamManager {
         }
         return allTeamsInfo.toString().trim(); // 去除最后的换行符
     }
-    // 其他可能需要的方法，如列出所有队伍等...
+    // 其他方法
 }
