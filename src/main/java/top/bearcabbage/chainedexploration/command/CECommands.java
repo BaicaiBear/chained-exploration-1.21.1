@@ -87,6 +87,24 @@ public class CECommands {
                 })
         );
 
+        // 列出所有队伍命令
+        dispatcher.register(literal("cetlist")
+                .requires(source -> source.hasPermissionLevel(0))
+                .executes(context -> {
+                    ServerCommandSource source = context.getSource();
+                    if (source.getEntity() instanceof ServerPlayerEntity player) {
+                        String allTeamsInfo = CETeamManager.listAllTeams();
+                        if (!allTeamsInfo.isEmpty()) {
+                            sendSuccessFeedback(source, allTeamsInfo);
+                        } else {
+                            sendErrorFeedback(source, "当前没有队伍存在");
+                        }
+                    }
+                    return 1;
+                })
+        );
+
+        //ce指令
         dispatcher.register(literal("ce")
         // 查询玩家等级的子命令
         .then(literal("level")
@@ -105,6 +123,7 @@ public class CECommands {
                                         .requires(source -> source.hasPermissionLevel(2))
                                         .executes(context -> {
                                             ServerCommandSource source = context.getSource();
+
                                             ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
                                             int newLevel = IntegerArgumentType.getInteger(context, "level");
 
