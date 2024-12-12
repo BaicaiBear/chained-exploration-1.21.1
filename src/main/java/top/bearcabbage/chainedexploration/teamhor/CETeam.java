@@ -19,14 +19,14 @@ public class CETeam {
         this.members = new HashSet<>();
         members.add(leader);
         CEPlayerAccessor celeader = (CEPlayerAccessor) leader;
-        radius = celeader.getCE().getRadius()/10;
+        radius = celeader.getCE().getRadiusForTeam()/10;
     }
 
     public boolean addMember(ServerPlayerEntity player) {
         if (members.add(player)) {
             if (player instanceof CEPlayerAccessor cePlayerAccessor) {
                 cePlayerAccessor.getCE().joinTeam(this); // 更新玩家的isTeamed状态
-                this.radius += cePlayerAccessor.getCE().getRadius()/10/this.members.size();
+                this.radius += cePlayerAccessor.getCE().getRadiusForTeam()/10/this.members.size();
                 for(ServerPlayerEntity member : members){
                     member.sendMessage(Text.of(player.getName().getLiteralString()+"加入了队伍，现在队伍的半径变为"+String.valueOf(this.radius)));
                 }
@@ -42,7 +42,7 @@ public class CETeam {
         }
         if (player instanceof CEPlayerAccessor cePlayerAccessor) {
             cePlayerAccessor.getCE().quitTeam(); // 确保玩家离开队伍时更新isTeamed状态
-            this.radius = this.radius*(this.members.size()+1)/(this.members.size()) - cePlayerAccessor.getCE().getRadius()/10/this.members.size();
+            this.radius = this.radius*(this.members.size()+1)/(this.members.size()) - cePlayerAccessor.getCE().getRadiusForTeam()/10/this.members.size();
             for(ServerPlayerEntity member : members){
                 member.sendMessage(Text.of(player.getName().getLiteralString()+"离开了队伍，现在队伍的半径变为"+String.valueOf(this.radius)));
             }

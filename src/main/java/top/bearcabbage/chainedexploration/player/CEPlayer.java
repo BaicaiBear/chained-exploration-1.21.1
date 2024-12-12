@@ -177,7 +177,10 @@ public class CEPlayer {
         return this.spawnWorld;
     }
 
-    public double getRadius(){
+    public double getRadiusForTeam(){
+        if(this.level==CELevel.LEVELS.getLast()){
+            return CELevel.RADIUS.get(CELevel.RADIUS.size()-2);
+        }
         return CELevel.RADIUS.get(this.level);
     }
     public void onDeath() {
