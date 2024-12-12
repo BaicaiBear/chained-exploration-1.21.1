@@ -1,6 +1,10 @@
 package top.bearcabbage.chainedexploration.player;
 
 import eu.pb4.playerdata.api.PlayerDataApi;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,6 +25,14 @@ public class CEPlayer {
     private int level;
     private boolean isTeamed;
     private CETeam team;
+
+    private static final int TICK_INTERVAL = 20;
+    private static final int GRACE_TICK = 100;
+    private static final int DAMAGE_INTERVAL = 10;
+    private static final float DAMAGE = 2.0F;
+    private int CETick;
+    private int unsafeTick;
+    private int damageTick;
 
     public CEPlayer(ServerPlayerEntity player) {
         this.player = player;
@@ -45,11 +57,34 @@ public class CEPlayer {
         }
         Boolean spawnInOverworld = data.getBoolean("spawn-in-overworld");
         this.spawnWorld = spawnInOverworld ? World.OVERWORLD : World.NETHER;
+        this.level = data.getInt("level");
+        CETick = 0;
+        unsafeTick = 0;
     }
 
-    public void onTick() {
-        if(!this.isTeamed){
+    public boolean onTick() {
+        if (CETick == 0) {
+            return true;
+        }
+        CETick = (CETick + 1) % TICK_INTERVAL;
+        return false;
+    }
 
+    public void onUnsafeTick() {
+        if(++unsafeTick<GRACE_TICK){
+            this.player.addStatusEffect(player.getStatusEffect(StatusEffects.BLINDNESS));
+        }
+        else{
+            if(damageTick++%DAMAGE_INTERVAL==0){
+                this.player.damage(player.getDamageSources().genericKill(),DAMAGE);
+            }
+        }
+    }
+
+    public void onSafeTick() {
+        if(--unsafeTick==0){
+            this.player.removeStatusEffect(StatusEffects.BLINDNESS);
+            damageTick = 0;
         }
     }
 
@@ -184,6 +219,12 @@ public class CEPlayer {
         return CELevel.RADIUS.get(this.level);
     }
     public void onDeath() {
-
+        CETick = damageTick = unsafeTick = 0;
     }
+
+    public int getUnsafeTick() {
+        return unsafeTick;
+    }
+
+
 }

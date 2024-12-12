@@ -12,9 +12,11 @@ public class CETeam {
     private ServerPlayerEntity leader;
     private Set<ServerPlayerEntity> members;
     private double radius;
+    private boolean wasSetOut;
 
 
     public CETeam(ServerPlayerEntity leader) {
+        this.wasSetOut = false;
         this.leader = leader;
         this.members = new HashSet<>();
         members.add(leader);
@@ -64,11 +66,25 @@ public class CETeam {
         members.clear();
     }
 
+    //完成组队，开始探险！
+    public void setOut(){
+        //玩家RTP到集合点
+        //禁止队伍接纳新成员
+    }
+
+    public boolean wasSetOut() {
+        return wasSetOut;
+    }
+
     public ServerPlayerEntity getLeader() {
         return leader;
     }
 
     public Set<ServerPlayerEntity> getMembers() {
         return members;
+    }
+
+    public double getRadius() {
+        return radius;
     }
 }

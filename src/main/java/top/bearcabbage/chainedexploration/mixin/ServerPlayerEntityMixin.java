@@ -23,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
 import top.bearcabbage.chainedexploration.player.CEPlayer;
+import top.bearcabbage.chainedexploration.player.CEPlayerHandler;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements CEPlayerAccessor {
@@ -134,8 +135,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements CE
     }
 
     //CEPlayer日常任务
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick", at = @At("TAIL"))
     private void tick(CallbackInfo ci) {
-
+        CEPlayerHandler.onTick((ServerPlayerEntity) (Object) this);
     }
 }
