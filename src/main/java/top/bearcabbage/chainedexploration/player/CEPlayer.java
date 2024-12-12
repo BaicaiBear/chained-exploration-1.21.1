@@ -92,6 +92,15 @@ public class CEPlayer {
         return true;
     }
 
+    public boolean quitTeam(CETeam newTeam) {
+        if(!this.isTeamed) {
+            return false;
+        }
+        isTeamed = false;
+        this.team = null;
+        return true;
+    }
+
 
     public CETeam getTeam(){
         return this.team;
