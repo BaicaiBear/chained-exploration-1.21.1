@@ -34,7 +34,7 @@ public class CETeamManager {
         }
     }
 
-    public class TeamInvite {/*
+    public class TeamInvite {
         private ServerPlayerEntity sender;
         private ServerPlayerEntity recipient;
 
@@ -49,7 +49,7 @@ public class CETeamManager {
 
         public ServerPlayerEntity getRecipient() {
             return recipient;
-        }*/
+        }
     }
     // 添加一个邀请列表，用来存储未处理的邀请
     private static final Map<UUID, TeamInvite> pendingInvitations = new HashMap<>();
@@ -60,12 +60,12 @@ public class CETeamManager {
             pendingInvitations.put(recipient.getUuid(), new TeamInvite(sender, recipient));
             // 实际游戏中，这里应添加代码发送实际的邀请消息给recipient
             return true;
-        }
+        }*/
         return false; // 如果已经有未处理的邀请，则不再发送新的邀请
-    */}
+    }
 
     // 接受邀请
-    public static boolean acceptInvitation(ServerPlayerEntity player) {/*
+    public static boolean acceptInvitation(ServerPlayerEntity player) {
         TeamInvite invitation = pendingInvitations.get(player.getUuid());
         if (invitation != null) {
             // 处理接受逻辑，例如加入队伍
@@ -74,14 +74,14 @@ public class CETeamManager {
                 return true;
             }
         }
-        return false;*/
+        return false;
     }
 
     // 拒绝邀请
-    public static boolean denyInvitation(ServerPlayerEntity player) {/*
+    public static boolean denyInvitation(ServerPlayerEntity player) {
         return pendingInvitations.remove(player.getUuid()) != null;
-    */}
-    */
+    }
+
     public static boolean removeMember(ServerPlayerEntity playerToRemove, ServerPlayerEntity teamLeader) {
         if (teamList.containsKey(teamLeader)) {
             CETeam CETeam = teamList.get(teamLeader);
@@ -94,28 +94,27 @@ public class CETeamManager {
         if (!teamList.containsKey(teamLeader)) {
             return false;
         }
-
         CETeam CETeam = teamList.get(teamLeader);
         if (!CETeam.getLeader().equals(teamLeader)) {
             return false; // 尝试解散的人不是队长
         }
-
         CETeam.disbandTeam();
         teamList.remove(teamLeader);
         return true;
     }
 
-    public static boolean quitTeam(ServerPlayerEntity playerName) {
+    public static boolean LeaveTeam(ServerPlayerEntity player) {
         for (Map.Entry<ServerPlayerEntity, CETeam> entry : teamList.entrySet()) {
             CETeam team = entry.getValue();
-            if (team.getMembers().contains(playerName)) {
+            if (team.getMembers().contains(player)) {
                 // 玩家存在于某个队伍中
-                if (team.getLeader().equals(playerName)) {
-                    // 如果玩家是队长，则不能直接退出，需要先解散队伍
-                    return false; // 或者可以抛出异常，提示队长不能直接退出
+                if (team.getLeader().equals(player)) {
+                    // 如果玩家是队长，则解散队伍
+                    CETeamManager.disbandTeam(player);
                 } else {
                     // 玩家是普通成员，可以直接移除
-                    return team.removeMember(playerName);
+
+                    return team.removeMember(player);
                 }
             }
         }
@@ -127,12 +126,12 @@ public class CETeamManager {
         StringBuilder allTeamsInfo = new StringBuilder("当前所有队伍列表:\n");
         for (Map.Entry<ServerPlayerEntity, CETeam> entry : teamList.entrySet()) {
             CETeam team = entry.getValue();
-            allTeamsInfo.append("队伍名称: ").append(team.getLeader()).append("\n")
-                    .append("队长: ").append(team.getLeader()).append("\n")
+            allTeamsInfo.append("队伍名称: ").append(team.getLeader().getName().getLiteralString()).append("\n")
+                    .append("队长: ").append(team.getLeader().getName().getLiteralString()).append("\n")
                     .append("成员: ");
             for (ServerPlayerEntity member : team.getMembers()) {
                 if (!team.getLeader().equals(member)) {
-                    allTeamsInfo.append(member).append(", ");
+                    allTeamsInfo.append(member.getName().getLiteralString()).append(", ");
                 }
             }
             if (team.getMembers().size() > 1) {

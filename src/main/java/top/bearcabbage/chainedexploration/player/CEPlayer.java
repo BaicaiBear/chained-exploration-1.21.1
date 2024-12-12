@@ -1,14 +1,11 @@
 package top.bearcabbage.chainedexploration.player;
 
 import eu.pb4.playerdata.api.PlayerDataApi;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import top.bearcabbage.chainedexploration.ChainedExploration;
 import top.bearcabbage.chainedexploration.teamhor.CETeam;
-
-import java.nio.file.Path;
 
 public class CEPlayer {
 
@@ -91,8 +88,7 @@ public class CEPlayer {
         this.team = newTeam;
         return true;
     }
-
-    public boolean quitTeam(CETeam newTeam) {
+    public boolean quitTeam() {
         if(!this.isTeamed) {
             return false;
         }

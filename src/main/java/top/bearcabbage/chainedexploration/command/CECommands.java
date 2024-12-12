@@ -94,10 +94,10 @@ public class CECommands {
                 .executes(context -> {
                     ServerCommandSource source = context.getSource();
                     if (source.getEntity() instanceof ServerPlayerEntity player) {
-                        if (CETeamManager.quitTeam(player)) {
+                        if (CETeamManager.LeaveTeam(player)) {
                             return sendSuccessFeedback(source, "成功退出队伍");
                         } else {
-                            return sendErrorFeedback(source, "无法退出队伍: 您没有在任何队伍中或者您是队长，需要先解散队伍");
+                            return sendErrorFeedback(source, "无法退出队伍: 您没有在任何队伍中");
                         }
                     }
                     return 0;
