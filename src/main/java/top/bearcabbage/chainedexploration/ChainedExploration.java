@@ -4,8 +4,6 @@ import eu.pb4.playerdata.api.PlayerDataApi;
 import eu.pb4.playerdata.api.storage.NbtDataStorage;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.bearcabbage.chainedexploration.command.CECommands;

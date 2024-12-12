@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
-import top.bearcabbage.chainedexploration.player.CEPlayer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import top.bearcabbage.chainedexploration.player.CEPlayerManager;
 
 public class CETeamManager {
     private static final Map<ServerPlayerEntity, CETeam> teamList = new HashMap<>();

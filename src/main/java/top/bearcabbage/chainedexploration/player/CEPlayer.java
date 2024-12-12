@@ -29,7 +29,6 @@ public class CEPlayer {
             isTeamed = false;
             data = new NbtCompound();
             data.putInt("level", 0);
-            data.putBoolean("isteamed", false);
             data.putIntArray("rtpspawn", new int[]{-1});
             PlayerDataApi.setCustomDataFor(player, ChainedExploration.CEData, data);
         }
@@ -40,8 +39,10 @@ public class CEPlayer {
         }
     }
 
-    public static void onTick(ServerPlayerEntity player) {
+    public void onTick() {
+        if(!this.isTeamed){
 
+        }
     }
 
     public int getCELevel() {
@@ -91,13 +92,13 @@ public class CEPlayer {
         }
         isTeamed = true;
         this.team = newTeam;
-        NbtCompound data = new NbtCompound();
-        data.putBoolean("isteamed", true);
-        PlayerDataApi.setCustomDataFor(player, ChainedExploration.CEData, data);
         return true;
     }
+
 
     public CETeam getTeam(){
         return this.team;
     }
+
+
 }

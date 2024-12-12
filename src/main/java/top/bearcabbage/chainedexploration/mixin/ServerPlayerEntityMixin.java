@@ -1,10 +1,12 @@
 package top.bearcabbage.chainedexploration.mixin;
 
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.TeleportTarget;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -35,6 +37,11 @@ public abstract class ServerPlayerEntityMixin implements CEPlayerAccessor {
     }
 
     //RTP出生点保存
+    @Inject(method = "setSpawnPoint", at = @At(value = "HEAD"), cancellable = true)
+    private void setSpawnPoint(RegistryKey<World> dimension, BlockPos pos, float angle, boolean forced, boolean sendMessage, CallbackInfo ci) {
+
+    }
+
     @Inject(method = "getRespawnTarget", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
     private void getRespawnTarget(boolean alive, TeleportTarget.PostDimensionTransition postDimensionTransition, CallbackInfoReturnable<TeleportTarget> cir) {
         ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
@@ -48,6 +55,6 @@ public abstract class ServerPlayerEntityMixin implements CEPlayerAccessor {
     //CEPlayer日常任务
     @Inject(method = "tick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
-        CEPlayer.onTick((ServerPlayerEntity) (Object) this);
+
     }
 }

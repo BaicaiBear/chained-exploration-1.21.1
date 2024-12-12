@@ -17,8 +17,6 @@ import java.util.Iterator;
 @Mixin(SpawnPointCommand.class)
 public class SpawnPointCommandMixin {
 
-
-
     @Inject(method = "execute", at = @At("TAIL"))
     private static void execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, BlockPos pos, float angle, CallbackInfoReturnable<Integer> cir) {
         Iterator<ServerPlayerEntity> iterator = targets.iterator();
