@@ -26,7 +26,7 @@ public class CETeamManager {
         }
     }
 
-    public static boolean removeMember(ServerPlayerEntity playerToRemove, String teamLeader) {
+    public static boolean removeMember(ServerPlayerEntity playerToRemove, ServerPlayerEntity teamLeader) {
         if (teamList.containsKey(teamLeader)) {
             CETeam CETeam = teamList.get(teamLeader);
             return CETeam.removeMember(playerToRemove);
