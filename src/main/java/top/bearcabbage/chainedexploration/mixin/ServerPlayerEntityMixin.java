@@ -135,7 +135,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements CE
     }
 
     //CEPlayer日常任务
-    @Inject(method = "tick", at = @At("TAIL"))
+    @Inject(method = "tick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         CEPlayerHandler.onTick((ServerPlayerEntity) (Object) this);
     }

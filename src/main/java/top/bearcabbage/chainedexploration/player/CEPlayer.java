@@ -1,6 +1,7 @@
 package top.bearcabbage.chainedexploration.player;
 
 import eu.pb4.playerdata.api.PlayerDataApi;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
@@ -82,10 +83,8 @@ public class CEPlayer {
     }
 
     public void onUnsafeTick() {
-        if(++unsafeTick<GRACE_TICK){
-            this.player.addStatusEffect(player.getStatusEffect(StatusEffects.BLINDNESS));
-        }
-        else{
+        this.player.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 3*TICK_INTERVAL, 0, false, true));
+        if(++unsafeTick>GRACE_TICK){
             if(damageTick++%DAMAGE_INTERVAL==0){
                 this.player.damage(player.getDamageSources().genericKill(),DAMAGE);
             }
@@ -123,7 +122,7 @@ public class CEPlayer {
 
     public BlockPos getRtpSpawn() {
         if(this.rtpSpawn == null) {
-            return null;
+            return spawnPoint;
         }
         return this.rtpSpawn;
     }
