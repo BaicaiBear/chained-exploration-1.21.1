@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.world.World;
+import top.bearcabbage.chainedexploration.area.CEArea;
 import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
 
 public class CETeam {
@@ -13,7 +16,7 @@ public class CETeam {
     private final Set<ServerPlayerEntity> members;
     private double radius;
     private boolean wasSetOut;
-
+    private CEArea teamArea;
 
     public CETeam(ServerPlayerEntity leader) {
         this.wasSetOut = false;
@@ -80,7 +83,11 @@ public class CETeam {
     //完成组队，开始探险！
     public void setOut(){
         //玩家RTP到集合点
+        Vec2f center = new Vec2f(0, 0);
         //禁止队伍接纳新成员
+
+        //创建队伍区域
+        teamArea = CEArea.of(World.OVERWORLD, center, radius, 0, false, true, false, false);
     }
 
     public boolean wasSetOut() {
@@ -95,7 +102,7 @@ public class CETeam {
         return members;
     }
 
-    public double getRadius() {
-        return radius;
+    public CEArea getTeamArea(){
+        return teamArea;
     }
 }

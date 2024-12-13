@@ -1,18 +1,20 @@
 package top.bearcabbage.chainedexploration.player;
 
 import eu.pb4.playerdata.api.PlayerDataApi;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageSources;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.world.World;
 import top.bearcabbage.chainedexploration.ChainedExploration;
+import top.bearcabbage.chainedexploration.area.CEArea;
 import top.bearcabbage.chainedexploration.team.CETeam;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static top.bearcabbage.chainedexploration.utils.CEMath.HorizontalDistance;
 
@@ -25,6 +27,8 @@ public class CEPlayer {
     private int level;
     private boolean isTeamed;
     private CETeam team;
+    private CEArea selfArea;
+    private Set<CEArea> protectedAreas = new HashSet<>();
 
     private static final int TICK_INTERVAL = 20;
     private static final int GRACE_TICK = 100;
@@ -54,10 +58,15 @@ public class CEPlayer {
         int[] spawnVec = data.getIntArray("spawnpoint");
         if (spawnVec.length == 3) {
             this.spawnPoint = new BlockPos(spawnVec[0], spawnVec[1], spawnVec[2]);
+        } else {
+            this.spawnPoint = player.getServerWorld().getSpawnPos();
         }
-        Boolean spawnInOverworld = data.getBoolean("spawn-in-overworld");
+        boolean spawnInOverworld = data.getBoolean("spawn-in-overworld");
         this.spawnWorld = spawnInOverworld ? World.OVERWORLD : World.NETHER;
         this.level = data.getInt("level");
+        Vec2f pos = new Vec2f(spawnPoint.getX(), spawnPoint.getZ());
+        if(spawnWorld==World.NETHER) pos.multiply(8);
+        this.selfArea = CEArea.of(World.OVERWORLD, pos, CELevel.RADIUS.get(this.level), 0, false, false, false, false);
         CETick = 0;
         unsafeTick = 0;
     }
@@ -98,6 +107,9 @@ public class CEPlayer {
         NbtCompound data = new NbtCompound();
         data.putInt("level", level);
         PlayerDataApi.setCustomDataFor(player, ChainedExploration.CEData, data);
+        Vec2f pos = new Vec2f(spawnPoint.getX(), spawnPoint.getZ());
+        if(spawnWorld==World.NETHER) pos.multiply(8);
+        this.selfArea = CEArea.of(World.OVERWORLD, pos, CELevel.RADIUS.get(this.level), 0, false, false, false, false);
         return true;
     }
 
@@ -139,6 +151,9 @@ public class CEPlayer {
         data.putIntArray("rtpspawn", new int[]{pos.getX(), pos.getY(), pos.getZ()});
         data.putIntArray("spawnpoint", new int[]{pos.getX(), pos.getY(), pos.getZ()});
         PlayerDataApi.setCustomDataFor(player, ChainedExploration.CEData, data);
+        Vec2f poss = new Vec2f(spawnPoint.getX(), spawnPoint.getZ());
+        if(spawnWorld==World.NETHER) poss.multiply(8);
+        this.selfArea = CEArea.of(World.OVERWORLD, poss, CELevel.RADIUS.get(this.level), 0, false, false, false, false);
         return true;
     }
 
@@ -154,8 +169,10 @@ public class CEPlayer {
                 data.putIntArray("spawnpoint", new int[]{pos.getX(), pos.getY(), pos.getZ()});
                 data.putBoolean("spawn-in-overworld", true);
                 PlayerDataApi.setCustomDataFor(player, ChainedExploration.CEData, data);
+                Vec2f poss = new Vec2f(spawnPoint.getX(), spawnPoint.getZ());
+                this.selfArea = CEArea.of(World.OVERWORLD, poss, CELevel.RADIUS.get(this.level), 0, false, false, false, false);
                 this.player.sendMessage(Text.of("成功设置重生点！"));
-                this.player.sendMessage(Text.of("[CE]您的探索范围中心已更新为[" + String.valueOf(pos.getX()) + "," + String.valueOf(pos.getY()) + "," + String.valueOf(pos.getZ()) + "]"));
+                this.player.sendMessage(Text.of("[CE]您的探索范围中心已更新为[" + String.valueOf(poss.x)  + "," + String.valueOf(poss.y) + "]"));
                 return true;
             }
             this.player.sendMessage(Text.of("[CE]重生点设置失败！重生点超出原始探索范围！"));
@@ -168,8 +185,10 @@ public class CEPlayer {
                 data.putIntArray("spawnpoint", new int[]{pos.getX(), pos.getY(), pos.getZ()});
                 data.putBoolean("spawn-in-overworld", false);
                 PlayerDataApi.setCustomDataFor(player, ChainedExploration.CEData, data);
+                Vec2f poss = new Vec2f(spawnPoint.getX(), spawnPoint.getZ()).multiply(8);
+                this.selfArea = CEArea.of(World.OVERWORLD, poss, CELevel.RADIUS.get(this.level), 0, false, false, false, false);
                 this.player.sendMessage(Text.of("成功设置重生点！"));
-                this.player.sendMessage(Text.of("[CE]您的探索范围中心已更新为[" + String.valueOf(8 * pos.getX()) + "," + String.valueOf(8 * pos.getY()) + "," + String.valueOf(8 * pos.getZ()) + "]"));
+                this.player.sendMessage(Text.of("[CE]您的探索范围中心已更新为[" + String.valueOf(poss.x) + "," + String.valueOf(poss.y) + "]"));
                 return true;
             }
             this.player.sendMessage(Text.of("[CE]重生点设置失败！重生点超出原始探索范围！"));
@@ -202,6 +221,22 @@ public class CEPlayer {
 
     public CETeam getTeam(){
         return this.team;
+    }
+
+    public boolean joinProtectedArea(CEArea area){
+        return this.protectedAreas.add(area);
+    }
+
+    public boolean quitProtectedArea(CEArea area){
+        return this.protectedAreas.remove(area);
+    }
+
+    public Set<CEArea> getProtectedAreas(){
+        return this.protectedAreas;
+    }
+
+    public CEArea getSelfArea(){
+        return this.selfArea;
     }
 
     public float getSpawnAngle() {

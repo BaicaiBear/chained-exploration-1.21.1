@@ -8,8 +8,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PlayerSaveHandler;
+import top.bearcabbage.chainedexploration.area.CEArea;
 import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
 import top.bearcabbage.chainedexploration.team.CETeam;
+
+import java.util.HashSet;
 
 public abstract class CEPlayerHandler extends PlayerManager {
 
@@ -23,7 +26,7 @@ public abstract class CEPlayerHandler extends PlayerManager {
         if (player instanceof CEPlayerAccessor cePlayer &&
                 cePlayer.getCE().getCELevel() != CELevel.LEVELS.getLast() &&
                 cePlayer.getCE().onTick()){ //排除掉满级玩家
-            if (!checkSafety(player, cePlayer.getCE().isTeamed() && cePlayer.getCE().getTeam().wasSetOut())){
+            if (!checkSafety(player)){
                 cePlayer.getCE().onUnsafeTick();//不安全的状态
             } else if (cePlayer.getCE().getUnsafeTick() > 0){
                 cePlayer.getCE().onSafeTick();//刚刚回到安全区的状态
@@ -32,18 +35,18 @@ public abstract class CEPlayerHandler extends PlayerManager {
     }
 
     //检查安全状态
-    private static boolean checkSafety(ServerPlayerEntity player, boolean inTeam){
-        return inTeam ? checkSafety(player, ((CEPlayerAccessor)player).getCE().getTeam()) : checkSafety(player);
-    }
-    //检查非组队探险玩家的安全状态
     private static boolean checkSafety(ServerPlayerEntity player){
-        //还没写
-        return true;
-    }
-    //检查组队探险玩家的安全状态
-    private static boolean checkSafety(ServerPlayerEntity player, CETeam team){
-        //还没写
-        return true;
+        CEPlayerAccessor ceplayer = (CEPlayerAccessor) player;
+        //检查顺序：组队>个人>永久>公共>保护
+        if (ceplayer.getCE().isTeamed() && ceplayer.getCE().getTeam().wasSetOut()) {
+            if (ceplayer.getCE().getTeam().getTeamArea().inside(player.getServerWorld().getRegistryKey(), player.getPos()))
+                return true;
+        }
+        else if (ceplayer.getCE().getSelfArea().inside(player.getServerWorld().getRegistryKey(),player.getPos())) return true;
+        else if (CEArea.PERMANET_AREA.computeIfAbsent(player.getServerWorld().getRegistryKey(), k -> new HashSet<>()).stream().anyMatch(area -> area.inside(player.getServerWorld().getRegistryKey(), player.getPos()))) return true;
+        else if (CEArea.PUBLIC_AREA.computeIfAbsent(player.getServerWorld().getRegistryKey(), k -> new HashSet<>()).stream().anyMatch(area -> area.inside(player.getServerWorld().getRegistryKey(), player.getPos()))) return true;
+        else if (CEArea.PROTECTED_AREA.computeIfAbsent(player.getServerWorld().getRegistryKey(), k -> new HashSet<>()).stream().anyMatch(area -> area.inside(player.getServerWorld().getRegistryKey(), player.getPos()))) return true;
+        return false;
     }
 }
 
