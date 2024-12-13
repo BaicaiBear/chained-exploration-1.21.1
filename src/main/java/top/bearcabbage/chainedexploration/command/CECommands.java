@@ -47,7 +47,7 @@ public class CECommands {
                                 ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
                                 if (targetPlayer.getUuid().equals(player.getUuid())) {
                                     return sendErrorFeedback(source, "不能向自己发送队伍邀请");
-                                }
+                                }//检测自己
                                 if (CETeamManager.sendInvitation(player, targetPlayer)) {
                                     return sendSuccessFeedback(source, "已向 " + targetPlayer.getName().getLiteralString() + " 发送队伍邀请");
                                 } else {
@@ -112,11 +112,11 @@ public class CECommands {
                                 ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "player");
                                 if (player.getUuid().equals(targetPlayer.getUuid())) {
                                     return sendErrorFeedback(source, "您不能移除自己");
-                                }
+                                }//检测自己
                                 if (CETeamManager.removeMember(targetPlayer, player)) {
                                     return sendSuccessFeedback(source, "成功移除队员: " + targetPlayer.getName().getLiteralString());
                                 } else {
-                                    return sendErrorFeedback(source, "无法移除队员: 玩家不在队伍中");
+                                    return sendErrorFeedback(source, "无法移除队员: 玩家不在队伍中或您不是队伍的发起者");
                                 }
                             }
                             return 0;
@@ -131,7 +131,7 @@ public class CECommands {
                         if (CETeamManager.disbandTeam(player)) {
                             return sendSuccessFeedback(source, "成功解散队伍");
                         } else {
-                            return sendErrorFeedback(source, "无法解散队伍: 您不是队伍的领导者");
+                            return sendErrorFeedback(source, "无法解散队伍: 您不是队伍的发起者");
                         }
                     }
                     return 0;

@@ -18,6 +18,11 @@ public class CETeamManager {
 
     // 发送邀请
     public static boolean sendInvitation(ServerPlayerEntity sender, ServerPlayerEntity recipient) {
+        // 确保被邀请玩家不在任何队伍中
+        if (((CEPlayerAccessor) recipient).getCE().isTeamed()) {
+            recipient.sendMessage(Text.literal("您已经在队伍中，不能接受新的队伍邀请！"), true);
+            return false;
+        }
         if (pendingInvitations.values().stream().noneMatch(invite -> invite.recipient().equals(recipient))) {
             pendingInvitations.put(recipient.getUuid(), new TeamInvite(sender, recipient));
             recipient.sendMessage(Text.literal(sender.getName().getLiteralString() + " 邀请您加入队伍！"), true);// 发送邀请消息给recipient
@@ -30,6 +35,11 @@ public class CETeamManager {
     public static boolean acceptInvitation(ServerPlayerEntity player) {
         TeamInvite invitation = pendingInvitations.get(player.getUuid());
         if (invitation != null) {
+            // 确保被邀请玩家没有已经在队伍中
+            if (((CEPlayerAccessor) player).getCE().isTeamed()) {
+                player.sendMessage(Text.of("您已经在队伍中，不能加入其他队伍！"), true);
+                return false;
+            }
             // 处理接受逻辑，例如加入队伍
             if (createOrJoinTeam(player, invitation.sender())) {
                 pendingInvitations.remove(player.getUuid());
@@ -46,15 +56,15 @@ public class CETeamManager {
 
     public static boolean createOrJoinTeam(ServerPlayerEntity playerJoining, ServerPlayerEntity targetPlayer) {
         if (!teamList.containsKey(targetPlayer)) {
-            // 检查playerJoining是否已在队伍中
-            if (!(playerJoining instanceof CEPlayerAccessor cePlayerAccessor) || cePlayerAccessor.getCE().isTeamed()) {
+            // 使用 CEPlayerAccessor 直接获取 isTeamed 状态
+            CEPlayerAccessor cePlayerAccessorJoining = (CEPlayerAccessor) playerJoining;
+            if (cePlayerAccessorJoining.getCE().isTeamed()) {
                 // 如果playerJoining已在队伍中，则返回失败
                 return false;
             }
-
             CETeam newCETeam = new CETeam(targetPlayer);
             teamList.put(targetPlayer, newCETeam);
-            cePlayerAccessor.getCE().joinTeam(newCETeam);
+            cePlayerAccessorJoining.getCE().joinTeam(newCETeam);
             ((CEPlayerAccessor) targetPlayer).getCE().joinTeam(newCETeam);
             return newCETeam.addMember(playerJoining);
         } else {
@@ -95,7 +105,6 @@ public class CETeamManager {
                     CETeamManager.disbandTeam(player);
                 } else {
                     // 玩家是普通成员，可以直接移除
-
                     return team.removeMember(player);
                 }
             }
