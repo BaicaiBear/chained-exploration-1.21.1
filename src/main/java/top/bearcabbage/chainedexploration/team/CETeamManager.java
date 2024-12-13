@@ -15,7 +15,7 @@ public class CETeamManager {
     public record TeamInvite(ServerPlayerEntity sender, ServerPlayerEntity recipient) {
     }
     // 添加一个邀请列表，用来存储未处理的邀请
-    private static final Map<UUID, TeamInvite> pendingInvitations = new HashMap<>();
+    public static final Map<UUID, TeamInvite> pendingInvitations = new HashMap<>();
 
     // 发送邀请
     public static boolean sendInvitation(ServerPlayerEntity sender, ServerPlayerEntity recipient) {
@@ -36,6 +36,13 @@ public class CETeamManager {
     public static boolean acceptInvitation(ServerPlayerEntity player) {
         TeamInvite invitation = pendingInvitations.get(player.getUuid());
         if (invitation != null) {
+            // 检查是否有多个邀请
+            long multipleInvitationsCount = pendingInvitations.values().stream()
+                    .filter(inv -> inv.recipient().equals(player))
+                    .count();
+            if (multipleInvitationsCount > 1) {
+                return false; // 存在多个邀请，返回 false 表示此情况
+            }
             // 确保被邀请玩家没有已经在队伍中
             if (((CEPlayerAccessor) player).getCE().isTeamed()) {
                 player.sendMessage(Text.of("您已经在队伍中，不能加入其他队伍！"), true);
@@ -48,6 +55,24 @@ public class CETeamManager {
             }
         }
         return false;
+    }
+
+    // 用于接受指定玩家的邀请
+    public static boolean acceptInvitation(ServerPlayerEntity player, ServerPlayerEntity sender) {
+        // 确保邀请存在并且来自指定的玩家
+        TeamInvite invitation = pendingInvitations.values().stream()
+                .filter(inv -> inv.sender().equals(sender) && inv.recipient().equals(player))
+                .findFirst()
+                .orElse(null);
+
+        if (invitation != null) {
+            // 处理接受逻辑
+            if (createOrJoinTeam(player, invitation.sender())) {
+                pendingInvitations.remove(player.getUuid());
+                return true;
+            }
+        }
+        return false; // 邀请不存在或处理失败
     }
 
     // 拒绝邀请
@@ -145,6 +170,38 @@ public class CETeamManager {
             allTeamsInfo.append("\n\n");
         }
         return allTeamsInfo.toString().trim(); // 去除最后的换行符
+    }
+
+    public static String listMyTeam(ServerPlayerEntity player) {
+        // 初始化返回信息
+        StringBuilder myTeamInfo = new StringBuilder();
+        CEPlayerAccessor cePlayer = (CEPlayerAccessor) player;
+        // 使用CEPlayer的getTeam方法直接获取玩家所在的队伍
+        CETeam team = cePlayer.getCE().getTeam();
+        // 检查玩家是否有队伍
+        if (team != null) {
+            // 构建队伍信息
+            myTeamInfo.append("队伍名称: ").append(team.getLeader().getName().getLiteralString()).append("\n")
+                    .append("队长: ").append(team.getLeader().getName().getLiteralString()).append("\n")
+                    .append("成员: ");
+
+            // 添加队员信息
+            for (ServerPlayerEntity member : team.getMembers()) {
+                if (!team.getLeader().equals(member)) {
+                    myTeamInfo.append(member.getName().getLiteralString()).append(", ");
+                }
+            }
+
+            // 移除最后一个逗号和空格
+            if (team.getMembers().size() > 1) {
+                myTeamInfo.setLength(myTeamInfo.length() - 2);
+            }
+        } else {
+            // 如果玩家没有队伍，返回提示信息
+            return "您当前没有加入任何队伍。";
+        }
+
+        return myTeamInfo.toString();
     }
     // 其他方法
 }

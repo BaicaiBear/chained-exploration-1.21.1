@@ -59,11 +59,30 @@ public class CECommands {
                         })
                 ));
 
-        // 接受邀请子命令
         cetRoot.then(literal("accept")
+                .then(argument("sender", EntityArgumentType.player())
+                        .executes(context -> {
+                            ServerCommandSource source = context.getSource();
+                            ServerPlayerEntity player = source.getPlayer();
+                            ServerPlayerEntity sender = context.getArgument("sender", ServerPlayerEntity.class);
+
+                            if (CETeamManager.acceptInvitation(player, sender)) {
+                                return sendSuccessFeedback(source, "成功接受来自 " + sender.getName().getString() + " 的邀请并加入队伍");
+                            } else {
+                                return sendErrorFeedback(source, "没有来自 " + sender.getName().getString() + " 的未处理邀请或接受邀请失败");
+                            }
+                        })
+                )
                 .executes(context -> {
                     ServerCommandSource source = context.getSource();
                     if (source.getEntity() instanceof ServerPlayerEntity player) {
+                        // 检查是否存在多个邀请
+                        long multipleInvitationsCount = CETeamManager.pendingInvitations.values().stream()
+                                .filter(inv -> inv.recipient().equals(player))
+                                .count();
+                        if (multipleInvitationsCount > 1) {
+                            return sendErrorFeedback(source, "您有多个未处理的邀请，请先使用 /cet list invite 来查看并管理它们。");
+                        }
                         if (CETeamManager.acceptInvitation(player)) {
                             return sendSuccessFeedback(source, "成功接受邀请并加入队伍");
                         } else {
@@ -80,7 +99,7 @@ public class CECommands {
                     ServerCommandSource source = context.getSource();
                     if (source.getEntity() instanceof ServerPlayerEntity player) {
                         if (CETeamManager.denyInvitation(player)) {
-                            return sendSuccessFeedback(source, "成功拒绝邀请");
+                            return sendSuccessFeedback(source, "成功清空邀请");
                         } else {
                             return sendErrorFeedback(source, "没有未处理的邀请");
                         }
@@ -139,15 +158,19 @@ public class CECommands {
                 })
         );
 
-        // 列出所有队伍子命令
+        // 列出发出命令的玩家的队伍及队长和成员
         cetRoot.then(literal("list")
                 .executes(context -> {
                     ServerCommandSource source = context.getSource();
-                    String allTeamsInfo = CETeamManager.listAllTeams();
-                    if (allTeamsInfo.equals("当前所有队伍列表:")) {
-                        sendErrorFeedback(source, "当前没有队伍存在");
+                    if (source.getEntity() instanceof ServerPlayerEntity player) {
+                        String myTeamInfo = CETeamManager.listMyTeam(player);
+                        if (myTeamInfo.isEmpty()) {
+                            sendErrorFeedback(source, "您当前没有在任何队伍中");
+                        } else {
+                            sendSuccessFeedback(source, myTeamInfo);
+                        }
                     } else {
-                        sendSuccessFeedback(source, allTeamsInfo);
+                        sendErrorFeedback(source, "该命令只能由玩家执行");
                     }
                     return 1;
                 })
@@ -162,7 +185,6 @@ public class CECommands {
         // 查询level
         ceRoot.then(literal("level")
                 .then(argument("targetPlayer", EntityArgumentType.player())
-                        .requires(source -> source.hasPermissionLevel(2))
                         .executes(context -> {
                             ServerCommandSource source = context.getSource();
                             ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
@@ -170,6 +192,19 @@ public class CECommands {
                             return sendSuccessFeedback(source, targetPlayer.getName().getLiteralString() + " 的CE等级为: " + level);
                         })
                 ));
+
+        ceRoot.then(literal("list")
+                .executes(context -> {
+                    ServerCommandSource source = context.getSource();
+                    String allTeamsInfo = CETeamManager.listAllTeams();
+                    if (allTeamsInfo.equals("当前所有队伍列表:")) {
+                        sendErrorFeedback(source, "当前没有队伍存在");
+                    } else {
+                        sendSuccessFeedback(source, allTeamsInfo);
+                    }
+                    return 1;
+                })
+        );
 
         // 设置level子命令
         ceRoot.then(argument("targetPlayer", EntityArgumentType.player())

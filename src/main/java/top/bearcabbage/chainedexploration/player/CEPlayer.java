@@ -15,6 +15,7 @@ import top.bearcabbage.chainedexploration.team.CETeam;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static top.bearcabbage.chainedexploration.utils.CEMath.HorizontalDistance;
 
@@ -29,6 +30,7 @@ public class CEPlayer {
     private CETeam team;
     private CEArea selfArea;
     private Set<CEArea> protectedAreas = new HashSet<>();
+    private final ReentrantLock lock = new ReentrantLock();
 
     private static final int TICK_INTERVAL = 20;
     private static final int GRACE_TICK = 100;
@@ -203,20 +205,31 @@ public class CEPlayer {
     }
 
     public boolean joinTeam(CETeam newTeam) {
-        if(this.isTeamed) {
-            return false;
+        lock.lock();
+        try {
+            if(this.isTeamed || newTeam == null) {
+                return false;
+            }
+            isTeamed = true;
+            this.team = newTeam;
+            return true;
+        } finally {
+            lock.unlock();
         }
-        isTeamed = true;
-        this.team = newTeam;
-        return true;
     }
+
     public boolean quitTeam() {
-        if(!this.isTeamed) {
-            return false;
+        lock.lock();
+        try {
+            if(!this.isTeamed) {
+                return false;
+            }
+            isTeamed = false;
+            this.team = null;
+            return true;
+        } finally {
+            lock.unlock();
         }
-        isTeamed = false;
-        this.team = null;
-        return true;
     }
 
     public CETeam getTeam(){
