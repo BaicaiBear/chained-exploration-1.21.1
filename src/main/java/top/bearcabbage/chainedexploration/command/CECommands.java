@@ -184,8 +184,19 @@ public class CECommands {
 
         // 查询level
         ceRoot.then(literal("level")
+                .executes(context -> {
+                    // 如果没有提供targetPlayer参数，获取命令发出者作为默认查询对象
+                    ServerCommandSource source = context.getSource();
+                    ServerPlayerEntity targetPlayer = (ServerPlayerEntity) source.getEntity();
+                    if (targetPlayer == null) {
+                        return sendErrorFeedback(source, "该命令只能由玩家执行");
+                    }
+                    int level = (targetPlayer instanceof CEPlayerAccessor cePlayerAccessor) ? cePlayerAccessor.getCE().getCELevel() : -1;
+                    return sendSuccessFeedback(source, "您的CE等级为: " + level);
+                })
                 .then(argument("targetPlayer", EntityArgumentType.player())
                         .executes(context -> {
+                            // 如果提供了targetPlayer参数，使用参数指定的玩家
                             ServerCommandSource source = context.getSource();
                             ServerPlayerEntity targetPlayer = EntityArgumentType.getPlayer(context, "targetPlayer");
                             int level = (targetPlayer instanceof CEPlayerAccessor cePlayerAccessor) ? cePlayerAccessor.getCE().getCELevel() : -1;
