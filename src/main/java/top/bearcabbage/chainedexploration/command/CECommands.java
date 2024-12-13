@@ -13,6 +13,7 @@ import top.bearcabbage.chainedexploration.team.CETeamManager;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+//注册命令并引用对应的CETeamManager方法 包括一些简单的使用者判断
 public class CECommands {
 
     private static int sendSuccessFeedback(ServerCommandSource source, String message) {
@@ -39,7 +40,7 @@ public class CECommands {
                 .requires(source -> source.hasPermissionLevel(0));
 
         // 加入队伍子命令
-        cetRoot.then(literal("join")
+        cetRoot.then(literal("invite")
                 .then(argument("targetPlayer", EntityArgumentType.player())
                         .executes(context -> {
                             ServerCommandSource source = context.getSource();

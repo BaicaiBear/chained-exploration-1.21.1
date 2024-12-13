@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import top.bearcabbage.chainedexploration.interfaces.CEPlayerAccessor;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+//满足CECommands的调用 进行权限判断和聊天框报错反馈
 public class CETeamManager {
     private static final Map<ServerPlayerEntity, CETeam> teamList = new HashMap<>();//创建一个teamList
 
@@ -77,7 +78,14 @@ public class CETeamManager {
     public static boolean removeMember(ServerPlayerEntity playerToRemove, ServerPlayerEntity teamLeader) {
         if (teamList.containsKey(teamLeader)) {
             CETeam CETeam = teamList.get(teamLeader);
-            return CETeam.removeMember(playerToRemove);
+            if (CETeam.getMembers().size() == 2) {
+                // 如果移除玩家后队伍将只剩队长一人，则解散队伍
+                CETeamManager.disbandTeam(teamLeader);
+                return true;
+            } else {
+                // 否则正常尝试移除成员
+                return CETeam.removeMember(playerToRemove);
+            }
         }
         return false;
     }
@@ -96,23 +104,28 @@ public class CETeamManager {
     }
 
     public static boolean LeaveTeam(ServerPlayerEntity player) {
+        CEPlayerAccessor cePlayerAccessor = (CEPlayerAccessor) player;
+        if (!cePlayerAccessor.getCE().isTeamed()) {
+            player.sendMessage(Text.literal("您当前没有加入任何队伍！"), true);
+            return false;
+        }// 玩家不在任何队伍中
         for (Map.Entry<ServerPlayerEntity, CETeam> entry : teamList.entrySet()) {
             CETeam team = entry.getValue();
             if (team.getMembers().contains(player)) {
                 // 玩家存在于某个队伍中
-                if (team.getLeader().equals(player)) {
-                    // 如果玩家是队长，则解散队伍
-                    CETeamManager.disbandTeam(player);
+                if (team.getMembers().size() == 2) {
+                    // 如果队伍只剩下队长（即当前玩家）且没有其他成员，直接解散队伍
+                    CETeamManager.disbandTeam(team.getLeader());
+                    return true;
                 } else {
                     // 玩家是普通成员，可以直接移除
                     return team.removeMember(player);
                 }
             }
         }
-        // 玩家不在任何队伍中
+        player.sendMessage(Text.literal("错误：您不在已知的队伍列表中，但标记却表示您已组队。"), true);
         return false;
     }
-
     public static String listAllTeams() {
         StringBuilder allTeamsInfo = new StringBuilder("当前所有队伍列表:\n");
         for (Map.Entry<ServerPlayerEntity, CETeam> entry : teamList.entrySet()) {
